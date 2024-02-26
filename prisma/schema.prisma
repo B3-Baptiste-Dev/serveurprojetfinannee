@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Modèle pour les utilisateurs
+model User {
+  id               Int           @id @default(autoincrement())
+  email            String        @unique
+  password         String
+  first_name       String?
+  last_name        String?
+  location         String?
+  objects          Object[]      @relation("UserObjects")
+  reservations     Reservation[] @relation("UserReservations")
+  messagesSent     Message[]     @relation("MessagesSent")
+  messagesReceived Message[]     @relation("MessagesReceived")
+  reviews          Review[]      @relation("UserReviews")
+}
+
+model Annonce {
+  id        Int      @id @default(autoincrement())
+  objectId  Int
+  object    Object   @relation(fields: [objectId], references: [id])
+  latitude  Float
+  longitude Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Object {
+  id           Int           @id @default(autoincrement())
+  ownerId      Int
+  owner        User          @relation(name: "UserObjects", fields: [ownerId], references: [id])
+  title        String
+  description  String
+  categoryId   Int
+  category     Category      @relation(name: "ObjectCategories", fields: [categoryId], references: [id])
+  annonces     Annonce[]
+  reviews      Review[]      @relation("ObjectReviews")
+  available    Boolean       @default(true)
+  reservations Reservation[]
+}
+
+// Modèle pour les réservations
+model Reservation {
+  id        Int      @id @default(autoincrement())
+  objectId  Int
+  object    Object   @relation(fields: [objectId], references: [id])
+  userId    Int
+  user      User     @relation(name: "UserReservations", fields: [userId], references: [id])
+  startDate DateTime
+  endDate   DateTime
+  status    String   @default("pending") // Exemples de statuts : pending, accepted, declined
+}
+
+// Modèle pour les messages
+model Message {
+  id           Int      @id @default(autoincrement())
+  content      String
+  sentById     Int
+  sentBy       User     @relation(name: "MessagesSent", fields: [sentById], references: [id])
+  receivedById Int
+  receivedBy   User     @relation(name: "MessagesReceived", fields: [receivedById], references: [id])
+  createdAt    DateTime @default(now())
+}
+
+// Modèle pour les évaluations
+model Review {
+  id        Int      @id @default(autoincrement())
+  rating    Int // Note sur une échelle, par exemple de 1 à 5
+  comment   String?
+  objectId  Int?
+  object    Object?  @relation(name: "ObjectReviews", fields: [objectId], references: [id])
+  userId    Int
+  user      User     @relation(name: "UserReviews", fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  objects     Object[] @relation("ObjectCategories")
+}
