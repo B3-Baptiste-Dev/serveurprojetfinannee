@@ -22,7 +22,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "prisma:seed": "ts-node prisma/seed.ts"
+    "prisma:seed:dev": "ts-node prisma/seed.ts",
+    "prisma:seed:prod": "heroku run npm run prisma:seed -a serveurflutter",
+    "heroku-postbuild": "npm run build && npm run prisma:migrate:prod"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
