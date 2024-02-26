@@ -17,8 +17,8 @@ async function bootstrap() {
     allowedHeaders: 'Content-Type, Accept',
   });
 
-
-  await app.listen(3000);
+  // Utiliser la variable d'environnement $PORT ou, si non définie, revenir au port 3000
+  await app.listen(process.env.PORT || 3000);
 }
 
 bootstrap();
