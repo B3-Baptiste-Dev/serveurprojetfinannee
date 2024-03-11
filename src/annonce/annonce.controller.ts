@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, ParseIntPipe, Query } from '@nestjs/common';
 import { AnnonceService } from './annonce.service';
 import { CreateAnnonceDto } from './dto';
 import { Prisma } from '@prisma/client';
@@ -20,6 +20,15 @@ export class AnnonceController {
     @Get('with-objects')
     findAllWithObjects() {
         return this.annonceService.findAllAnnoncesWithObjects();
+    }
+
+    @Get('nearby')
+    async findNearbyAnnonces(
+      @Query('lat') lat: number,
+      @Query('lon') lon: number,
+      @Query('maxDistance') maxDistance: number,
+    ) {
+        return this.annonceService.findNearbyAnnonces(lat, lon, maxDistance);
     }
 
     @Get(':id')

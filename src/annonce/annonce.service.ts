@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma, Annonce } from '@prisma/client';
+import { Annonce, Prisma } from '@prisma/client';
 import { CreateAnnonceDto } from './dto';
+import * as geolib from 'geolib';
 
 @Injectable()
 export class AnnonceService {
@@ -25,6 +26,20 @@ export class AnnonceService {
         });
     }
 
+    async findNearbyAnnonces(lat: number, lon: number, maxDistance: number) {
+        const annonces = await this.prisma.annonce.findMany({
+            include: {
+                object: true,
+            },
+        });
+        return annonces.filter((annonce) => {
+            const annonceDistance = geolib.getDistance(
+              { latitude: lat, longitude: lon },
+              { latitude: annonce.latitude, longitude: annonce.longitude }
+            );
+            return annonceDistance / 1000 <= maxDistance;
+        });
+    }
 
     async findOneAnnonce(id: number): Promise<Annonce | null> {
         return this.prisma.annonce.findUnique({
