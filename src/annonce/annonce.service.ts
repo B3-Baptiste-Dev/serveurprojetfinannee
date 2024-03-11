@@ -20,8 +20,10 @@ export class AnnonceService {
     async findAllAnnoncesWithObjects(userId: number): Promise<any[]> {
         return this.prisma.annonce.findMany({
             where: {
-                userId: {
-                    not: userId,
+                object: {
+                    ownerId: {
+                        not: userId,
+                    },
                 },
             },
             include: {
@@ -29,7 +31,6 @@ export class AnnonceService {
             },
         });
     }
-
 
 
     async findOneAnnonce(id: number): Promise<Annonce | null> {
