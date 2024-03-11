@@ -22,10 +22,21 @@ let AnnonceService = class AnnonceService {
         });
     }
     async findAllAnnonces() {
-        return this.prisma.annonce.findMany();
-    }
-    async findAllAnnoncesWithObjects() {
         return this.prisma.annonce.findMany({
+            include: {
+                object: true,
+            },
+        });
+    }
+    async findAllAnnoncesWithObjects(userId) {
+        return this.prisma.annonce.findMany({
+            where: {
+                object: {
+                    ownerId: {
+                        not: userId,
+                    },
+                },
+            },
             include: {
                 object: true,
             },

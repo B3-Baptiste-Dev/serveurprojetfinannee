@@ -14,7 +14,11 @@ export class AnnonceService {
     }
 
     async findAllAnnonces(): Promise<Annonce[]> {
-        return this.prisma.annonce.findMany();
+        return this.prisma.annonce.findMany({
+            include: {
+                object: true,
+            },
+        });
     }
 
     async findAllAnnoncesWithObjects(userId: number): Promise<any[]> {

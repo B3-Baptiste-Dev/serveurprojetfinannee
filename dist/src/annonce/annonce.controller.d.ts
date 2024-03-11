@@ -20,7 +20,7 @@ export declare class AnnonceController {
         createdAt: Date;
         updatedAt: Date;
     }[]>;
-    findAllWithObjects(): Promise<any[]>;
+    findAllWithObjects(userId?: string): Promise<any[]>;
     findOne(id: number): Promise<{
         id: number;
         objectId: number;

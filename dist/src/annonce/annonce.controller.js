@@ -27,8 +27,8 @@ let AnnonceController = class AnnonceController {
     findAll() {
         return this.annonceService.findAllAnnonces();
     }
-    findAllWithObjects() {
-        return this.annonceService.findAllAnnoncesWithObjects();
+    findAllWithObjects(userId) {
+        return this.annonceService.findAllAnnoncesWithObjects(Number(userId));
     }
     findOne(id) {
         return this.annonceService.findOneAnnonce(id);
@@ -56,8 +56,9 @@ __decorate([
 ], AnnonceController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)('with-objects'),
+    __param(0, (0, common_1.Query)('userId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], AnnonceController.prototype, "findAllWithObjects", null);
 __decorate([
