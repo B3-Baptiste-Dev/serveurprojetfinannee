@@ -18,13 +18,14 @@ export class AnnonceService {
         return this.prisma.annonce.findMany();
     }
 
+    // Dans votre service
     async findAllAnnoncesWithObjects(excludeUserId?: number): Promise<any[]> {
         let whereClause = {};
 
         if (excludeUserId) {
             whereClause = {
-                NOT: {
-                    userId: excludeUserId,
+                userId: {
+                    not: excludeUserId,
                 },
             };
         }
@@ -37,21 +38,6 @@ export class AnnonceService {
         });
     }
 
-
-    async findNearbyAnnonces(lat: number, lon: number, maxDistance: number) {
-        const annonces = await this.prisma.annonce.findMany({
-            include: {
-                object: true,
-            },
-        });
-        return annonces.filter((annonce) => {
-            const annonceDistance = geolib.getDistance(
-              { latitude: lat, longitude: lon },
-              { latitude: annonce.latitude, longitude: annonce.longitude }
-            );
-            return annonceDistance / 1000 <= maxDistance;
-        });
-    }
 
     async findOneAnnonce(id: number): Promise<Annonce | null> {
         return this.prisma.annonce.findUnique({

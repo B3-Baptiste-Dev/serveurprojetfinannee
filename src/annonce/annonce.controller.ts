@@ -22,15 +22,6 @@ export class AnnonceController {
         return this.annonceService.findAllAnnoncesWithObjects(Number(userId));
     }
 
-    @Get('nearby')
-    async findNearbyAnnonces(
-      @Query('lat') lat: number,
-      @Query('lon') lon: number,
-      @Query('maxDistance') maxDistance: number,
-    ) {
-        return this.annonceService.findNearbyAnnonces(lat, lon, maxDistance);
-    }
-
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
         return this.annonceService.findOneAnnonce(id);
