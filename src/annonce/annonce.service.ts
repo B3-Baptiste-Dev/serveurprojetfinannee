@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Annonce, Prisma } from '@prisma/client';
 import { CreateAnnonceDto } from './dto';
-import * as geolib from 'geolib';
 
 @Injectable()
 export class AnnonceService {
@@ -18,25 +17,19 @@ export class AnnonceService {
         return this.prisma.annonce.findMany();
     }
 
-    // Dans votre service
-    async findAllAnnoncesWithObjects(excludeUserId?: number): Promise<any[]> {
-        let whereClause = {};
-
-        if (excludeUserId) {
-            whereClause = {
-                userId: {
-                    not: excludeUserId,
-                },
-            };
-        }
-
+    async findAllAnnoncesWithObjects(userId: number): Promise<any[]> {
         return this.prisma.annonce.findMany({
-            where: whereClause,
+            where: {
+                userId: {
+                    not: userId,
+                },
+            },
             include: {
                 object: true,
             },
         });
     }
+
 
 
     async findOneAnnonce(id: number): Promise<Annonce | null> {
