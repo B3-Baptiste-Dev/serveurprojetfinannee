@@ -18,13 +18,25 @@ export class AnnonceService {
         return this.prisma.annonce.findMany();
     }
 
-    async findAllAnnoncesWithObjects(): Promise<any[]> {
+    async findAllAnnoncesWithObjects(excludeUserId?: number): Promise<any[]> {
+        let whereClause = {};
+
+        if (excludeUserId) {
+            whereClause = {
+                NOT: {
+                    userId: excludeUserId,
+                },
+            };
+        }
+
         return this.prisma.annonce.findMany({
+            where: whereClause,
             include: {
                 object: true,
             },
         });
     }
+
 
     async findNearbyAnnonces(lat: number, lon: number, maxDistance: number) {
         const annonces = await this.prisma.annonce.findMany({

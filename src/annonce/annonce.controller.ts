@@ -18,8 +18,8 @@ export class AnnonceController {
     }
 
     @Get('with-objects')
-    findAllWithObjects() {
-        return this.annonceService.findAllAnnoncesWithObjects();
+    findAllWithObjects(@Query('userId') userId?: string) {
+        return this.annonceService.findAllAnnoncesWithObjects(Number(userId));
     }
 
     @Get('nearby')
