@@ -55,7 +55,6 @@ async function main() {
             categoryId: electronique.id,
             ownerId: user1.id,
             available: true,
-            location : 'Paris, France',
         },
     });
 
@@ -66,7 +65,6 @@ async function main() {
             categoryId: vetements.id,
             ownerId: user2.id,
             available: true,
-            location : 'Lyon, France',
         },
     });
 

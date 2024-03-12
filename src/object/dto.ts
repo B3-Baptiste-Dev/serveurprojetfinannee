@@ -14,9 +14,6 @@ export class CreateObjectDto {
     @IsInt()
     categoryId: number;
 
-    @IsString()
-    location: string;
-
     @IsBoolean()
     @IsOptional()
     available?: boolean = true;
@@ -38,10 +35,6 @@ export class UpdateObjectDto extends PartialType(CreateObjectDto) {
     @IsInt()
     @IsOptional()
     categoryId?: number;
-
-    @IsString()
-    @IsOptional()
-    location?: string;
 
     @IsBoolean()
     @IsOptional()

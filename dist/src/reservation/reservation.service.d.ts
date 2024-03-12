@@ -17,7 +17,6 @@ export declare class ReservationService {
             ownerId: number;
             title: string;
             description: string;
-            location: string;
             categoryId: number;
             available: boolean;
         };
@@ -43,7 +42,6 @@ export declare class ReservationService {
             ownerId: number;
             title: string;
             description: string;
-            location: string;
             categoryId: number;
             available: boolean;
         };

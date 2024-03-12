@@ -11,13 +11,24 @@ CREATE TABLE "User" (
 );
 
 -- CreateTable
+CREATE TABLE "Annonce" (
+    "id" SERIAL NOT NULL,
+    "objectId" INTEGER NOT NULL,
+    "latitude" DOUBLE PRECISION NOT NULL,
+    "longitude" DOUBLE PRECISION NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Annonce_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Object" (
     "id" SERIAL NOT NULL,
     "ownerId" INTEGER NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "categoryId" INTEGER NOT NULL,
-    "location" TEXT NOT NULL,
     "available" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "Object_pkey" PRIMARY KEY ("id")
@@ -72,6 +83,9 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Category_name_key" ON "Category"("name");
+
+-- AddForeignKey
+ALTER TABLE "Annonce" ADD CONSTRAINT "Annonce_objectId_fkey" FOREIGN KEY ("objectId") REFERENCES "Object"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Object" ADD CONSTRAINT "Object_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
