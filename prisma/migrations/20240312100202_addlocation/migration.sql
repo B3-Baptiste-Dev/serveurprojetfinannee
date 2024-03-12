@@ -5,4 +5,4 @@
 
 */
 -- AlterTable
-ALTER TABLE "Object" ADD COLUMN     "location" TEXT NOT NULL;
+ALTER TABLE "Object" ADD COLUMN "location" TEXT NOT NULL DEFAULT 'Location par défaut';
