@@ -1,1 +1,0 @@
-ALTER TABLE "Object" ADD COLUMN "location" TEXT DEFAULT NULL;
