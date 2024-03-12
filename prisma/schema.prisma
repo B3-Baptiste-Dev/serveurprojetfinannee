@@ -38,7 +38,7 @@ model Object {
   owner        User          @relation(name: "UserObjects", fields: [ownerId], references: [id])
   title        String
   description  String
-  location     String
+  location     String?
   categoryId   Int
   category     Category      @relation(name: "ObjectCategories", fields: [categoryId], references: [id])
   annonces     Annonce[]
