@@ -33,6 +33,9 @@ export class AnnonceController {
       @Body() createAnnonceWithObjectDto: CreateAnnonceWithObjectDto,
       @UploadedFile() file: Express.Multer.File
     ) {
+        console.log("DTO reçu:", createAnnonceWithObjectDto); // Affiche les données reçues dans le DTO
+        console.log("Fichier reçu:", file); // Affiche les informations du fichier reçu
+
         return this.annonceService.createAnnonceWithObject(createAnnonceWithObjectDto, file);
     }
 
