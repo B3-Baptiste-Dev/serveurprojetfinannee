@@ -30,12 +30,13 @@ export class AnnonceService {
             data: {
                 title: dto.object.title,
                 description: dto.object.description,
-                categoryId: dto.object.categoryId,
                 ownerId: dto.object.ownerId,
-                available: dto.object.available ?? true,
+                categoryId: dto.object.categoryId,
+                available: dto.object.available,
                 imageUrl: localPath,
             },
         });
+        
         return this.prisma.annonce.create({
             data: {
                 objectId: object.id,
