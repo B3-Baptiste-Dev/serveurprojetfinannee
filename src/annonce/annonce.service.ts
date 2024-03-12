@@ -28,7 +28,11 @@ export class AnnonceService {
 
         const object = await this.prisma.object.create({
             data: {
-                ...dto.object,
+                title: dto.object.title,
+                description: dto.object.description,
+                categoryId: dto.object.categoryId,
+                ownerId: dto.object.ownerId,
+                available: dto.object.available ?? true,
                 imageUrl: localPath,
             },
         });
