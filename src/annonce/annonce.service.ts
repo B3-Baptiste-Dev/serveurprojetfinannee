@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Annonce, Prisma } from '@prisma/client';
 import { CreateAnnonceDto } from './dto';
+import { CreateAnnonceWithObjectDto } from './createAnnonceWithObjectDTO';
 
 @Injectable()
 export class AnnonceService {
@@ -10,6 +11,22 @@ export class AnnonceService {
     async createAnnonce(createAnnonceDto: CreateAnnonceDto): Promise<Annonce> {
         return this.prisma.annonce.create({
             data: createAnnonceDto,
+        });
+    }
+
+    async createAnnonceWithObject(dto: CreateAnnonceWithObjectDto) {
+        const object = await this.prisma.object.create({
+            data: {
+                ...dto.object,
+            },
+        });
+
+        return this.prisma.annonce.create({
+            data: {
+                objectId: object.id,
+                latitude: dto.latitude,
+                longitude: dto.longitude,
+            },
         });
     }
 

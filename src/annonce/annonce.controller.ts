@@ -1,15 +1,23 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
 import { AnnonceService } from './annonce.service';
 import { CreateAnnonceDto } from './dto';
 import { Prisma } from '@prisma/client';
+import { AuthGuard } from '@nestjs/passport';
+import { CreateAnnonceWithObjectDto } from './createAnnonceWithObjectDTO';
 
 @Controller('annonces')
 export class AnnonceController {
     constructor(private readonly annonceService: AnnonceService) {}
 
+    // @Post()
+    // create(@Body() createAnnonceDto: CreateAnnonceDto) {
+    //     return this.annonceService.createAnnonce(createAnnonceDto);
+    // }
+
+    @UseGuards(AuthGuard('jwt'))
     @Post()
-    create(@Body() createAnnonceDto: CreateAnnonceDto) {
-        return this.annonceService.createAnnonce(createAnnonceDto);
+    create(@Body() createAnnonceWithObjectDto: CreateAnnonceWithObjectDto) {
+        return this.annonceService.createAnnonceWithObject(createAnnonceWithObjectDto);
     }
 
     @Get()
