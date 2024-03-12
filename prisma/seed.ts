@@ -55,6 +55,7 @@ async function main() {
             categoryId: electronique.id,
             ownerId: user1.id,
             available: true,
+            imageUrl: 'https://via.placeholder.com/150',
         },
     });
 
@@ -65,6 +66,7 @@ async function main() {
             categoryId: vetements.id,
             ownerId: user2.id,
             available: true,
+            imageUrl: 'https://via.placeholder.com/150',
         },
     });
 
