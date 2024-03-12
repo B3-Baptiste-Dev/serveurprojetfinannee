@@ -36,7 +36,7 @@ export class AnnonceService {
                 imageUrl: localPath,
             },
         });
-        
+
         return this.prisma.annonce.create({
             data: {
                 objectId: object.id,
