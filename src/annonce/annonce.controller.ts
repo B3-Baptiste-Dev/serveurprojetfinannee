@@ -1,9 +1,21 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
-import { AnnonceService } from './annonce.service';
-import { CreateAnnonceDto } from './dto';
-import { Prisma } from '@prisma/client';
+import {
+    Controller,
+    Post,
+    UseGuards,
+    Body,
+    UseInterceptors,
+    UploadedFile,
+    Get,
+    Query,
+    Param,
+    ParseIntPipe, Put, Delete,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { AnnonceService } from './annonce.service';
 import { CreateAnnonceWithObjectDto } from './createAnnonceWithObjectDTO';
+import { Prisma } from '@prisma/client';
+
 
 @Controller('annonces')
 export class AnnonceController {
@@ -16,8 +28,12 @@ export class AnnonceController {
 
     @UseGuards(AuthGuard('jwt'))
     @Post()
-    create(@Body() createAnnonceWithObjectDto: CreateAnnonceWithObjectDto) {
-        return this.annonceService.createAnnonceWithObject(createAnnonceWithObjectDto);
+    @UseInterceptors(FileInterceptor('image'))
+    create(
+      @Body() createAnnonceWithObjectDto: CreateAnnonceWithObjectDto,
+      @UploadedFile() file: Express.Multer.File
+    ) {
+        return this.annonceService.createAnnonceWithObject(createAnnonceWithObjectDto, file);
     }
 
     @Get()

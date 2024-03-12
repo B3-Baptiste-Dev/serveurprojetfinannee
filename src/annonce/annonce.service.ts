@@ -3,6 +3,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Annonce, Prisma } from '@prisma/client';
 import { CreateAnnonceDto } from './dto';
 import { CreateAnnonceWithObjectDto } from './createAnnonceWithObjectDTO';
+import * as path from 'path';
+import * as fs from 'fs';
 
 @Injectable()
 export class AnnonceService {
@@ -14,13 +16,22 @@ export class AnnonceService {
         });
     }
 
-    async createAnnonceWithObject(dto: CreateAnnonceWithObjectDto) {
+    async createAnnonceWithObject(dto: CreateAnnonceWithObjectDto, file: Express.Multer.File) {
+        // Assurez-vous que le dossier de téléchargement existe
+        const uploadsDir = path.resolve('uploads');
+        if (!fs.existsSync(uploadsDir)) {
+            fs.mkdirSync(uploadsDir);
+        }
+
+        const localPath = `uploads/${file.originalname}`;
+        fs.writeFileSync(path.resolve(localPath), file.buffer);
+
         const object = await this.prisma.object.create({
             data: {
                 ...dto.object,
+                imageUrl: localPath,
             },
         });
-
         return this.prisma.annonce.create({
             data: {
                 objectId: object.id,
@@ -29,6 +40,7 @@ export class AnnonceService {
             },
         });
     }
+
 
     async findAllAnnonces(): Promise<Annonce[]> {
         return this.prisma.annonce.findMany({

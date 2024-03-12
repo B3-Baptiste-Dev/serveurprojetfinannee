@@ -11,6 +11,9 @@ export class CreateObjectDto {
     @IsString()
     description: string;
 
+    @IsString()
+    imageUrl: string;
+
     @IsInt()
     categoryId: number;
 
@@ -31,6 +34,9 @@ export class UpdateObjectDto extends PartialType(CreateObjectDto) {
     @IsString()
     @IsOptional()
     description?: string;
+
+    @IsString()
+    imageUrl: string;
 
     @IsInt()
     @IsOptional()
