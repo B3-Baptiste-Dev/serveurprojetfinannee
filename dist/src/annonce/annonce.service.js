@@ -21,6 +21,20 @@ let AnnonceService = class AnnonceService {
             data: createAnnonceDto,
         });
     }
+    async createAnnonceWithObject(dto) {
+        const object = await this.prisma.object.create({
+            data: {
+                ...dto.object,
+            },
+        });
+        return this.prisma.annonce.create({
+            data: {
+                objectId: object.id,
+                latitude: dto.latitude,
+                longitude: dto.longitude,
+            },
+        });
+    }
     async findAllAnnonces() {
         return this.prisma.annonce.findMany({
             include: {

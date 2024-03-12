@@ -1,10 +1,10 @@
 import { AnnonceService } from './annonce.service';
-import { CreateAnnonceDto } from './dto';
 import { Prisma } from '@prisma/client';
+import { CreateAnnonceWithObjectDto } from './createAnnonceWithObjectDTO';
 export declare class AnnonceController {
     private readonly annonceService;
     constructor(annonceService: AnnonceService);
-    create(createAnnonceDto: CreateAnnonceDto): Promise<{
+    create(createAnnonceWithObjectDto: CreateAnnonceWithObjectDto): Promise<{
         id: number;
         objectId: number;
         latitude: number;

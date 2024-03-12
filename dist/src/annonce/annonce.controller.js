@@ -15,14 +15,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AnnonceController = void 0;
 const common_1 = require("@nestjs/common");
 const annonce_service_1 = require("./annonce.service");
-const dto_1 = require("./dto");
 const client_1 = require("@prisma/client");
+const passport_1 = require("@nestjs/passport");
+const createAnnonceWithObjectDTO_1 = require("./createAnnonceWithObjectDTO");
 let AnnonceController = class AnnonceController {
     constructor(annonceService) {
         this.annonceService = annonceService;
     }
-    create(createAnnonceDto) {
-        return this.annonceService.createAnnonce(createAnnonceDto);
+    create(createAnnonceWithObjectDto) {
+        return this.annonceService.createAnnonceWithObject(createAnnonceWithObjectDto);
     }
     findAll() {
         return this.annonceService.findAllAnnonces();
@@ -42,10 +43,11 @@ let AnnonceController = class AnnonceController {
 };
 exports.AnnonceController = AnnonceController;
 __decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [dto_1.CreateAnnonceDto]),
+    __metadata("design:paramtypes", [createAnnonceWithObjectDTO_1.CreateAnnonceWithObjectDto]),
     __metadata("design:returntype", void 0)
 ], AnnonceController.prototype, "create", null);
 __decorate([

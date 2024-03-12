@@ -44,6 +44,7 @@ async function main() {
             categoryId: electronique.id,
             ownerId: user1.id,
             available: true,
+            location: 'Paris, France',
         },
     });
     const veste = await prisma.object.create({
@@ -53,6 +54,7 @@ async function main() {
             categoryId: vetements.id,
             ownerId: user2.id,
             available: true,
+            location: 'Lyon, France',
         },
     });
     const annonce1 = await prisma.annonce.create({

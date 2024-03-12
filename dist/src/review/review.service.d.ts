@@ -17,6 +17,7 @@ export declare class ReviewService {
             ownerId: number;
             title: string;
             description: string;
+            location: string;
             categoryId: number;
             available: boolean;
         };
@@ -42,6 +43,7 @@ export declare class ReviewService {
             ownerId: number;
             title: string;
             description: string;
+            location: string;
             categoryId: number;
             available: boolean;
         };
