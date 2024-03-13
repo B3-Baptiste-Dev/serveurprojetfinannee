@@ -9,5 +9,7 @@ export class CreateAnnonceWithObjectDto {
   @IsLongitude()
   longitude: number;
 
+  @ValidateNested()
+  @Type(() => CreateObjectDto)
   object: CreateObjectDto;
 }
