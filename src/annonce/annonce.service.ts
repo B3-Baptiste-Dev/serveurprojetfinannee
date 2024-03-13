@@ -27,21 +27,20 @@ export class AnnonceService {
             data: {
                 title: dto.object.title,
                 description: dto.object.description,
-                ownerId: +dto.object.ownerId,
+                ownerId: dto.object.ownerId,
                 categoryId: +dto.object.categoryId,
-                available: dto.object.available,
+                available: true,
                 imageUrl: localPath,
             },
         });
         return this.prisma.annonce.create({
             data: {
-                objectId: +object.id,
+                objectId: object.id,
                 latitude: +dto.latitude,
                 longitude: +dto.longitude,
             },
         });
     }
-
 
 
     async findAllAnnonces(): Promise<Annonce[]> {
