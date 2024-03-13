@@ -26,18 +26,18 @@ export class AnnonceController {
     //     return this.annonceService.createAnnonce(createAnnonceDto);
     // }
 
-    @UseGuards(AuthGuard('jwt'))
     @Post()
     @UseInterceptors(FileInterceptor('image'))
     create(
       @Body() createAnnonceWithObjectDto: CreateAnnonceWithObjectDto,
       @UploadedFile() file: Express.Multer.File
     ) {
-        console.log("DTO reçu:", createAnnonceWithObjectDto); // Affiche les données reçues dans le DTO
-        console.log("Fichier reçu:", file); // Affiche les informations du fichier reçu
+        console.log("DTO reçu:", JSON.stringify(createAnnonceWithObjectDto, null, 2)); // Pour un affichage formaté
+        console.log("Fichier reçu:", file ? file.originalname : 'Aucun fichier');
 
         return this.annonceService.createAnnonceWithObject(createAnnonceWithObjectDto, file);
     }
+
 
     @Get()
     findAll() {
