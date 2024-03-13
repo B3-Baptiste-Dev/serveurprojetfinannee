@@ -17,32 +17,27 @@ export class AnnonceService {
     }
 
     async createAnnonceWithObject(dto: CreateAnnonceWithObjectDto, file: Express.Multer.File) {
-        // Assurez-vous que le dossier de téléchargement existe
         const uploadsDir = path.resolve('uploads');
         if (!fs.existsSync(uploadsDir)) {
             fs.mkdirSync(uploadsDir);
         }
-
         const localPath = `uploads/${file.originalname}`;
         fs.writeFileSync(path.resolve(localPath), file.buffer);
-
-        // Accédez aux propriétés via dto.object pour refléter la structure de votre DTO
         const object = await this.prisma.object.create({
             data: {
                 title: dto.object.title,
                 description: dto.object.description,
-                ownerId: dto.object.ownerId, // Assurez-vous que ownerId est correctement défini dans votre DTO
-                categoryId: dto.object.categoryId,
+                ownerId: +dto.object.ownerId,
+                categoryId: +dto.object.categoryId,
                 available: dto.object.available,
                 imageUrl: localPath,
             },
         });
-
         return this.prisma.annonce.create({
             data: {
-                objectId: object.id,
-                latitude: dto.latitude,
-                longitude: dto.longitude,
+                objectId: +object.id,
+                latitude: +dto.latitude,
+                longitude: +dto.longitude,
             },
         });
     }
