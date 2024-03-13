@@ -26,11 +26,12 @@ export class AnnonceService {
         const localPath = `uploads/${file.originalname}`;
         fs.writeFileSync(path.resolve(localPath), file.buffer);
 
+        // Accédez aux propriétés via dto.object pour refléter la structure de votre DTO
         const object = await this.prisma.object.create({
             data: {
                 title: dto.object.title,
                 description: dto.object.description,
-                ownerId: dto.object.ownerId,
+                ownerId: dto.object.ownerId, // Assurez-vous que ownerId est correctement défini dans votre DTO
                 categoryId: dto.object.categoryId,
                 available: dto.object.available,
                 imageUrl: localPath,
@@ -45,6 +46,7 @@ export class AnnonceService {
             },
         });
     }
+
 
 
     async findAllAnnonces(): Promise<Annonce[]> {
