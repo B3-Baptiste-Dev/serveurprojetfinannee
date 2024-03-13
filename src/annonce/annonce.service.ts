@@ -25,22 +25,23 @@ export class AnnonceService {
         fs.writeFileSync(path.resolve(localPath), file.buffer);
         const object = await this.prisma.object.create({
             data: {
-                title: dto.object.title,
-                description: dto.object.description,
-                ownerId: dto.object.ownerId,
-                categoryId: +dto.object.categoryId,
-                available: true,
+                title: dto.object.title, // Accès à 'title' à travers 'object'
+                description: dto.object.description, // Accès à 'description' à travers 'object'
+                ownerId: +dto.object.ownerId, // Assurez-vous que 'ownerId' est un nombre
+                categoryId: +dto.object.categoryId, // Assurez-vous que 'categoryId' est un nombre
+                available: dto.object.available, // Accès à 'available' à travers 'object'
                 imageUrl: localPath,
             },
         });
         return this.prisma.annonce.create({
             data: {
-                objectId: object.id,
+                objectId: +object.id,
                 latitude: +dto.latitude,
                 longitude: +dto.longitude,
             },
         });
     }
+
 
 
     async findAllAnnonces(): Promise<Annonce[]> {
