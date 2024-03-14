@@ -2,12 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as bodyParser from 'body-parser';
+import { join } from 'path';
+import * as express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
   app.setGlobalPrefix('api/v1');
 
-  // Configurer le middleware body-parser pour augmenter la limite de taille de la charge utile
   app.use(bodyParser.json({ limit: '50mb' }));
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
@@ -22,7 +23,9 @@ async function bootstrap() {
     allowedHeaders: 'Content-Type, Accept',
   });
 
-  // Utiliser la variable d'environnement $PORT ou, si non définie, revenir au port 3000
+  // Serve static files
+  app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
+
   await app.listen(process.env.PORT || 3000);
 }
 
