@@ -27,13 +27,22 @@ export class AnnonceService {
         const localPath = `uploads/${file.originalname}`;
         fs.writeFileSync(path.resolve(localPath), file.buffer);
 
+        // Convertir categoryId et ownerId en entiers
+        const categoryId = parseInt(String(dto.object.categoryId));
+        const ownerId = parseInt(String(dto.object.ownerId));
+
+        // Vérifier que la conversion est valide
+        if (isNaN(categoryId) || isNaN(ownerId)) {
+            throw new Error("categoryId et ownerId doivent être des nombres valides.");
+        }
+
         // Créer un nouvel objet dans la base de données
         const object = await this.prisma.object.create({
             data: {
                 title: dto.object.title,
                 description: dto.object.description,
-                categoryId: dto.object.categoryId,
-                ownerId: dto.object.ownerId,
+                categoryId: categoryId, // Utiliser la valeur convertie
+                ownerId: ownerId, // Utiliser la valeur convertie
                 available: dto.object.available ?? true,
                 imageUrl: localPath,
             },
