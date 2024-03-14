@@ -26,11 +26,10 @@ export class AnnonceController {
     @UseInterceptors(FileInterceptor('image'))
     async create(
       @Body() body: any, // Recevez tout le corps comme un objet générique
-      @Body('object') objectString: string,
-      @Body('latitude') latitude: number,
-      @Body('longitude') longitude: number,
       @UploadedFile() file: Express.Multer.File
     ) {
+        // Le champ 'object' est déjà une chaîne dans 'body', donc pas besoin de @Body('object') ici
+        const objectString = body.object;
         console.log(body); // Vérifiez le contenu de `body` pour vous assurer que `object` est présent
         if (!objectString) {
             throw new Error('Le champ "object" est manquant ou invalide');
@@ -38,15 +37,23 @@ export class AnnonceController {
 
         let object;
         try {
-            object = JSON.parse(body.object);
+            object = JSON.parse(objectString);
         } catch (error) {
             throw new Error('Le format du champ "object" est invalide');
         }
+
+        // Conversion de 'latitude' et 'longitude' à partir de 'body'
+        const latitude = parseFloat(body.latitude);
+        const longitude = parseFloat(body.longitude);
+        if (isNaN(latitude) || isNaN(longitude)) {
+            throw new Error('Latitude ou longitude invalide');
+        }
+
         const createAnnonceWithObjectDto: CreateAnnonceWithObjectDto = {
             latitude,
             longitude,
             object: {
-                ...object, // Utilisez la décomposition d'objet pour passer toutes les propriétés
+                ...object,
                 imageUrl: file ? `uploads/${file.filename}` : '', // Gérez l'image reçue
             },
         };
