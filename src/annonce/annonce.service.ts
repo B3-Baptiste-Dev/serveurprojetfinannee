@@ -27,36 +27,37 @@ export class AnnonceService {
         const localPath = file ? `uploads/${file.originalname}` : '';
 
         // Convertir categoryId et ownerId en entiers
-        const categoryId = dto.object.categoryId;
-        const ownerId = dto.object.ownerId;
+        const categoryId = Number(dto.object.categoryId);
+        const ownerId = Number(dto.object.ownerId);
 
-        // Convertir latitude et longitude en nombres flottants
-        const latitude = dto.latitude;
-        const longitude = dto.longitude;
-
-        // Vérifier que toutes les conversions sont valides
-        if (isNaN(categoryId) || isNaN(ownerId) || isNaN(latitude) || isNaN(longitude)) {
-            throw new Error("categoryId, ownerId, latitude, et longitude doivent être des nombres valides.");
+        if (isNaN(categoryId) || isNaN(ownerId)) {
+            throw new Error("categoryId et ownerId doivent être des nombres valides.");
         }
 
-        // Créer un nouvel objet dans la base de données
+        const latitude = Number(dto.latitude);
+        const longitude = Number(dto.longitude);
+
+        if (isNaN(latitude) || isNaN(longitude)) {
+            throw new Error("Latitude et longitude doivent être des nombres valides.");
+        }
+
+
         const object = await this.prisma.object.create({
             data: {
                 title: dto.object.title,
                 description: dto.object.description,
-                categoryId: categoryId, // Utiliser la valeur convertie
-                ownerId: ownerId, // Utiliser la valeur convertie
+                categoryId, // categoryId est maintenant un nombre
+                ownerId, // ownerId est maintenant un nombre
                 available: dto.object.available ?? true,
                 imageUrl: localPath,
             },
         });
 
-        // Créer une nouvelle annonce associée à cet objet
         return this.prisma.annonce.create({
             data: {
                 objectId: object.id,
-                latitude: latitude, // Utiliser la valeur convertie
-                longitude: longitude, // Utiliser la valeur convertie
+                latitude, // latitude est maintenant un nombre
+                longitude, // longitude est maintenant un nombre
             },
         });
     }
