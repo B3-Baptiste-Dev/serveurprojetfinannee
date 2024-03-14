@@ -22,35 +22,36 @@ import { CreateObjectDto } from '../object/dto';
 export class AnnonceController {
     constructor(private readonly annonceService: AnnonceService) {}
 
-    // @Post()
-    // create(@Body() createAnnonceDto: CreateAnnonceDto) {
-    //     return this.annonceService.createAnnonce(createAnnonceDto);
-    // }
-
     @Post()
     @UseInterceptors(FileInterceptor('image'))
-    create(
+    async create(
       @Body('object') objectString: string,
       @Body('latitude') latitude: number,
       @Body('longitude') longitude: number,
       @UploadedFile() file: Express.Multer.File
     ) {
-        const object = JSON.parse(objectString);
+        if (!objectString) {
+            throw new Error('Le champ "object" est manquant ou invalide');
+        }
 
-        // Créez ici un DTO ou un objet littéral qui correspond à votre structure attendue
+        let object;
+        try {
+            object = JSON.parse(objectString);
+        } catch (error) {
+            throw new Error('Le format du champ "object" est invalide');
+        }
         const createAnnonceWithObjectDto: CreateAnnonceWithObjectDto = {
             latitude,
             longitude,
-            object: new CreateObjectDto(object.title, object.description, object.categoryId, object.ownerId, object.available),
+            object: {
+                ...object, // Utilisez la décomposition d'objet pour passer toutes les propriétés
+                imageUrl: file ? `uploads/${file.filename}` : '', // Gérez l'image reçue
+            },
         };
-
         console.log("DTO reçu:", JSON.stringify(createAnnonceWithObjectDto, null, 2));
         console.log("Fichier reçu:", file ? file.originalname : 'Aucun fichier');
-
         return this.annonceService.createAnnonceWithObject(createAnnonceWithObjectDto, file);
     }
-
-
 
     @Get()
     findAll() {
