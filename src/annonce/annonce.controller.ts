@@ -25,18 +25,20 @@ export class AnnonceController {
     @Post()
     @UseInterceptors(FileInterceptor('image'))
     async create(
+      @Body() body: any, // Recevez tout le corps comme un objet générique
       @Body('object') objectString: string,
       @Body('latitude') latitude: number,
       @Body('longitude') longitude: number,
       @UploadedFile() file: Express.Multer.File
     ) {
+        console.log(body); // Vérifiez le contenu de `body` pour vous assurer que `object` est présent
         if (!objectString) {
             throw new Error('Le champ "object" est manquant ou invalide');
         }
 
         let object;
         try {
-            object = JSON.parse(objectString);
+            object = JSON.parse(body.object);
         } catch (error) {
             throw new Error('Le format du champ "object" est invalide');
         }
