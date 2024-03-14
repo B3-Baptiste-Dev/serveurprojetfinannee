@@ -24,16 +24,19 @@ export class AnnonceService {
         }
 
         // Chemin local où le fichier sera enregistré
-        const localPath = `uploads/${file.originalname}`;
-        fs.writeFileSync(path.resolve(localPath), file.buffer);
+        const localPath = file ? `uploads/${file.originalname}` : '';
 
         // Convertir categoryId et ownerId en entiers
-        const categoryId = parseInt(String(dto.object.categoryId));
-        const ownerId = parseInt(String(dto.object.ownerId));
+        const categoryId = dto.object.categoryId;
+        const ownerId = dto.object.ownerId;
 
-        // Vérifier que la conversion est valide
-        if (isNaN(categoryId) || isNaN(ownerId)) {
-            throw new Error("categoryId et ownerId doivent être des nombres valides.");
+        // Convertir latitude et longitude en nombres flottants
+        const latitude = dto.latitude;
+        const longitude = dto.longitude;
+
+        // Vérifier que toutes les conversions sont valides
+        if (isNaN(categoryId) || isNaN(ownerId) || isNaN(latitude) || isNaN(longitude)) {
+            throw new Error("categoryId, ownerId, latitude, et longitude doivent être des nombres valides.");
         }
 
         // Créer un nouvel objet dans la base de données
@@ -52,11 +55,12 @@ export class AnnonceService {
         return this.prisma.annonce.create({
             data: {
                 objectId: object.id,
-                latitude: dto.latitude,
-                longitude: dto.longitude,
+                latitude: latitude, // Utiliser la valeur convertie
+                longitude: longitude, // Utiliser la valeur convertie
             },
         });
     }
+
 
 
 
