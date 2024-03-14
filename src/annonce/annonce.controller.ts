@@ -15,6 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { AnnonceService } from './annonce.service';
 import { CreateAnnonceWithObjectDto } from './createAnnonceWithObjectDTO';
 import { Prisma } from '@prisma/client';
+import { CreateObjectDto } from '../object/dto';
 
 
 @Controller('annonces')
@@ -29,14 +30,26 @@ export class AnnonceController {
     @Post()
     @UseInterceptors(FileInterceptor('image'))
     create(
-      @Body() createAnnonceWithObjectDto: CreateAnnonceWithObjectDto,
+      @Body('object') objectString: string,
+      @Body('latitude') latitude: number,
+      @Body('longitude') longitude: number,
       @UploadedFile() file: Express.Multer.File
     ) {
-        console.log("DTO reçu:", JSON.stringify(createAnnonceWithObjectDto, null, 2)); // Pour un affichage formaté
+        const object = JSON.parse(objectString);
+
+        // Créez ici un DTO ou un objet littéral qui correspond à votre structure attendue
+        const createAnnonceWithObjectDto: CreateAnnonceWithObjectDto = {
+            latitude,
+            longitude,
+            object: new CreateObjectDto(object.title, object.description, object.categoryId, object.ownerId, object.available),
+        };
+
+        console.log("DTO reçu:", JSON.stringify(createAnnonceWithObjectDto, null, 2));
         console.log("Fichier reçu:", file ? file.originalname : 'Aucun fichier');
 
         return this.annonceService.createAnnonceWithObject(createAnnonceWithObjectDto, file);
     }
+
 
 
     @Get()

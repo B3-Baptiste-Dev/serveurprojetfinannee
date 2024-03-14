@@ -16,28 +16,35 @@ export class AnnonceService {
         });
     }
 
-    async createAnnonceWithObject(dto: CreateAnnonceWithObjectDto, file: Express.Multer.File) {
+    async createAnnonceWithObject(dto: CreateAnnonceWithObjectDto, file: Express.Multer.File): Promise<any> {
+        // Assurez-vous que le dossier de téléchargement existe
         const uploadsDir = path.resolve('uploads');
         if (!fs.existsSync(uploadsDir)) {
             fs.mkdirSync(uploadsDir);
         }
+
+        // Chemin local où le fichier sera enregistré
         const localPath = `uploads/${file.originalname}`;
         fs.writeFileSync(path.resolve(localPath), file.buffer);
+
+        // Créer un nouvel objet dans la base de données
         const object = await this.prisma.object.create({
             data: {
-                title: dto.object.title, // Accès à 'title' à travers 'object'
-                description: dto.object.description, // Accès à 'description' à travers 'object'
-                ownerId: +dto.object.ownerId, // Assurez-vous que 'ownerId' est un nombre
-                categoryId: +dto.object.categoryId, // Assurez-vous que 'categoryId' est un nombre
-                available: dto.object.available, // Accès à 'available' à travers 'object'
+                title: dto.object.title,
+                description: dto.object.description,
+                categoryId: dto.object.categoryId,
+                ownerId: dto.object.ownerId,
+                available: dto.object.available ?? true,
                 imageUrl: localPath,
             },
         });
+
+        // Créer une nouvelle annonce associée à cet objet
         return this.prisma.annonce.create({
             data: {
-                objectId: +object.id,
-                latitude: +dto.latitude,
-                longitude: +dto.longitude,
+                objectId: object.id,
+                latitude: dto.latitude,
+                longitude: dto.longitude,
             },
         });
     }

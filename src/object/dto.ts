@@ -20,6 +20,15 @@ export class CreateObjectDto {
     @IsBoolean()
     @IsOptional()
     available?: boolean = true;
+
+    constructor(ownerId: number, title: string, description: string, imageUrl: string, categoryId: number, available?: boolean) {
+        this.ownerId = ownerId;
+        this.title = title;
+        this.description = description;
+        this.imageUrl = imageUrl;
+        this.categoryId = categoryId;
+        this.available = available;
+    }
 }
 
 export class UpdateObjectDto extends PartialType(CreateObjectDto) {
