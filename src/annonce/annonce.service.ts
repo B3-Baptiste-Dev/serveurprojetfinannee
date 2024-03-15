@@ -3,8 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Annonce, Prisma } from '@prisma/client';
 import { CreateAnnonceDto } from './dto';
 import { CreateAnnonceWithObjectDto } from './createAnnonceWithObjectDTO';
-import * as path from 'path';
-import * as fs from 'fs';
+import { Client } from 'basic-ftp';
 
 @Injectable()
 export class AnnonceService {
@@ -17,31 +16,35 @@ export class AnnonceService {
     }
 
     async createAnnonceWithObject(dto: CreateAnnonceWithObjectDto, file: Express.Multer.File): Promise<any> {
-        // Assurez-vous que le dossier de téléchargement existe
-        const uploadsDir = path.resolve('uploads');
-        if (!fs.existsSync(uploadsDir)) {
-            fs.mkdirSync(uploadsDir);
-        }
+        // Préparation du client FTP
+        const client = new Client();
+        client.ftp.verbose = true; // Activez cela pour le débogage si nécessaire
+        await client.access({
+            host: process.env.FTP_HOST,
+            user: process.env.FTP_USER,
+            password: process.env.FTP_PASSWORD,
+            secure: true, // Utilisez `true` pour FTPS
+        });
 
-        // Chemin local où le fichier sera enregistré
-        const localPath = file ? `uploads/${file.originalname}` : '';
+        // Chemin local et nom du fichier
+        const localFilePath = file.path;
+        const remoteFilePath = `uploads/${file.originalname}`;
+
+        // Téléversement du fichier
+        await client.uploadFrom(localFilePath, remoteFilePath);
+        await client.close();
+
+        // URL ou chemin d'accès public du fichier sur le serveur FTP
+        // Vous devez ajuster cette URL en fonction de votre configuration de serveur FTP
+        const imageUrl = `${process.env.FTP_PUBLIC_URL}/${remoteFilePath}`;
 
         // Convertir categoryId et ownerId en entiers
         const categoryId = Number(dto.object.categoryId);
         const ownerId = Number(dto.object.ownerId);
-
-        if (isNaN(categoryId) || isNaN(ownerId)) {
-            throw new Error("categoryId et ownerId doivent être des nombres valides.");
-        }
-
         const latitude = Number(dto.latitude);
         const longitude = Number(dto.longitude);
 
-        if (isNaN(latitude) || isNaN(longitude)) {
-            throw new Error("Latitude et longitude doivent être des nombres valides.");
-        }
-
-
+        // Création de l'objet avec l'URL du fichier sur le serveur FTP
         const object = await this.prisma.object.create({
             data: {
                 title: dto.object.title,
@@ -49,10 +52,11 @@ export class AnnonceService {
                 categoryId, // categoryId est maintenant un nombre
                 ownerId, // ownerId est maintenant un nombre
                 available: dto.object.available ?? true,
-                imageUrl: localPath,
+                imageUrl, // Utilisez l'URL sur le serveur FTP
             },
         });
 
+        // Création de l'annonce associée à cet objet
         return this.prisma.annonce.create({
             data: {
                 objectId: object.id,

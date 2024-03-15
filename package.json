@@ -38,6 +38,7 @@
     "@nestjs/typeorm": "^10.0.2",
     "@prisma/client": "^5.7.1",
     "argon2": "^0.31.2",
+    "basic-ftp": "^5.0.5",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
