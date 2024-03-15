@@ -23,7 +23,7 @@ export class AnnonceService {
             host: process.env.FTP_HOST,
             user: process.env.FTP_USER,
             password: process.env.FTP_PASSWORD,
-            secure: true, // Utilisez `true` pour FTPS
+            secure: false, // Utilisez `true` pour FTPS
         });
 
         // Chemin local et nom du fichier
