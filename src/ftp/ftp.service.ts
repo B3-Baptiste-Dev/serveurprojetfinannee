@@ -15,7 +15,7 @@ export class FtpService {
         host: this.configService.get('FTP_HOST'),
         user: this.configService.get('FTP_USER'),
         password: this.configService.get('FTP_PASSWORD'),
-        secure: true,
+        secure: false,
       });
       await client.uploadFrom(localFilePath, remoteFileName);
       console.log("Fichier uploadé avec succès sur le serveur FTP");
