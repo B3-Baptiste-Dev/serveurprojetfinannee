@@ -3,7 +3,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Annonce, Prisma } from '@prisma/client';
 import { CreateAnnonceDto } from './dto';
 import { CreateAnnonceWithObjectDto } from './createAnnonceWithObjectDTO';
-import { Client } from 'basic-ftp';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 @Injectable()
 export class AnnonceService {
@@ -16,27 +17,20 @@ export class AnnonceService {
     }
 
     async createAnnonceWithObject(dto: CreateAnnonceWithObjectDto, file: Express.Multer.File): Promise<any> {
-        // Préparation du client FTP
-        const client = new Client();
-        client.ftp.verbose = true; // Activez cela pour le débogage si nécessaire
-        await client.access({
-            host: process.env.FTP_HOST,
-            user: process.env.FTP_USER,
-            password: process.env.FTP_PASSWORD,
-            secure: false, // Utilisez `true` pour FTPS
-        });
+        // Vérifiez si un fichier a été téléchargé
+        if (!file) {
+            throw new Error('Aucun fichier téléchargé');
+        }
 
-        // Chemin local et nom du fichier
-        const localFilePath = file.path;
-        const remoteFilePath = `uploads/${file.originalname}`;
+        // Lisez le fichier téléchargé
+        const filePath = join(process.cwd(), file.path);
+        const fileBuffer = readFileSync(filePath);
 
-        // Téléversement du fichier
-        await client.uploadFrom(localFilePath, remoteFilePath);
-        await client.close();
+        // Encodez le contenu du fichier en base64
+        const fileContentBase64 = fileBuffer.toString('base64');
 
-        // URL ou chemin d'accès public du fichier sur le serveur FTP
-        // Vous devez ajuster cette URL en fonction de votre configuration de serveur FTP
-        const imageUrl = `${process.env.FTP_PUBLIC_URL}/${remoteFilePath}`;
+        // Vous pouvez maintenant stocker `fileContentBase64` dans votre base de données
+        const imageUrlBase64 = `data:${file.mimetype};base64,${fileContentBase64}`;
 
         // Convertir categoryId et ownerId en entiers
         const categoryId = Number(dto.object.categoryId);
@@ -52,7 +46,7 @@ export class AnnonceService {
                 categoryId, // categoryId est maintenant un nombre
                 ownerId, // ownerId est maintenant un nombre
                 available: dto.object.available ?? true,
-                imageUrl, // Utilisez l'URL sur le serveur FTP
+                imageUrl: imageUrlBase64, // Utilisez la chaîne base64 comme URL de l'image
             },
         });
 
@@ -65,8 +59,6 @@ export class AnnonceService {
             },
         });
     }
-
-
 
 
     async findAllAnnonces(): Promise<Annonce[]> {
