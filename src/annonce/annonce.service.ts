@@ -3,8 +3,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Annonce, Prisma } from '@prisma/client';
 import { CreateAnnonceDto } from './dto';
 import { CreateAnnonceWithObjectDto } from './createAnnonceWithObjectDTO';
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class AnnonceService {
@@ -17,20 +17,19 @@ export class AnnonceService {
     }
 
     async createAnnonceWithObject(dto: CreateAnnonceWithObjectDto, file: Express.Multer.File): Promise<any> {
-        // Vérifiez si un fichier a été téléchargé
         if (!file) {
             throw new Error('Aucun fichier téléchargé');
         }
 
-        // Lisez le fichier téléchargé
-        const filePath = join(process.cwd(), file.path);
-        const fileBuffer = readFileSync(filePath);
+        // Utilisez path.resolve pour construire le chemin absolu du fichier
+        const filePath = path.resolve(file.path);
+        const fileBuffer = fs.readFileSync(filePath);
 
         // Encodez le contenu du fichier en base64
         const fileContentBase64 = fileBuffer.toString('base64');
 
-        // Vous pouvez maintenant stocker `fileContentBase64` dans votre base de données
         const imageUrlBase64 = `data:${file.mimetype};base64,${fileContentBase64}`;
+
 
         // Convertir categoryId et ownerId en entiers
         const categoryId = Number(dto.object.categoryId);
