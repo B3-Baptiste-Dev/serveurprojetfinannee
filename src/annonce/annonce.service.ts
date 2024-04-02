@@ -21,9 +21,13 @@ export class AnnonceService {
             throw new Error('Aucun fichier téléchargé');
         }
 
-        // Utilisez path.resolve pour construire le chemin absolu du fichier
+        if (!file || !file.path) {
+            throw new Error('Le chemin du fichier est manquant ou invalide');
+        }
         const filePath = path.resolve(file.path);
         const fileBuffer = fs.readFileSync(filePath);
+
+        console.log("Chemin du fichier reçu:", file ? file.path : 'Chemin indéfini');
 
         // Encodez le contenu du fichier en base64
         const fileContentBase64 = fileBuffer.toString('base64');
