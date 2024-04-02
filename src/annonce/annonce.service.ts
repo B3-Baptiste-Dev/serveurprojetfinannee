@@ -84,12 +84,35 @@ export class AnnonceService {
         });
     }
 
-    async updateAnnonce(id: number, updateAnnonceDto: Prisma.AnnonceUpdateInput): Promise<Annonce> {
-        return this.prisma.annonce.update({
+    async updateAnnonce(id: number, updateAnnonceDto: any): Promise<Annonce> {
+        const annonce = await this.prisma.annonce.findUnique({
             where: { id },
-            data: updateAnnonceDto,
+            include: { object: true }, // Inclure les détails de l'objet pour accéder à son ID
         });
+
+        if (!annonce) {
+            throw new Error('Annonce introuvable');
+        }
+
+        await this.prisma.object.update({
+            where: { id: annonce.objectId },
+            data: {
+                title: updateAnnonceDto.title,
+                description: updateAnnonceDto.description,
+            },
+        });
+
+        const updatedAnnonce = await this.prisma.annonce.update({
+            where: { id },
+            data: {
+                latitude: updateAnnonceDto.latitude,
+                longitude: updateAnnonceDto.longitude,
+            },
+        });
+
+        return updatedAnnonce;
     }
+
 
     async removeAnnonce(id: number): Promise<Annonce> {
         const annonce = await this.prisma.annonce.findUnique({
