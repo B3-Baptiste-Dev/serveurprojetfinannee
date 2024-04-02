@@ -101,15 +101,30 @@ export class AnnonceService {
             throw new Error('Annonce introuvable');
         }
 
-        await this.prisma.annonce.delete({
-            where: { id },
+        // Vérifiez d'abord s'il y a des réservations liées à cet objet
+        const relatedReservations = await this.prisma.reservation.findMany({
+            where: { objectId: annonce.objectId },
         });
 
+        // Supprimez toutes les réservations liées à cet objet
+        for (const reservation of relatedReservations) {
+            await this.prisma.reservation.delete({
+                where: { id: reservation.id },
+            });
+        }
+
+        // Une fois toutes les réservations supprimées, supprimez l'objet
         const object = await this.prisma.object.delete({
             where: { id: annonce.objectId },
         });
 
+        // Supprimez l'annonce elle-même
+        await this.prisma.annonce.delete({
+            where: { id },
+        });
+
         return { annonce, object };
     }
+
 
 }
