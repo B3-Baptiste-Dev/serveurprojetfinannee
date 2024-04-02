@@ -17,23 +17,13 @@ export class AnnonceService {
     }
 
     async createAnnonceWithObject(dto: CreateAnnonceWithObjectDto, file: Express.Multer.File): Promise<any> {
-        if (!file) {
+        if (!file || !file.buffer) {
             throw new Error('Aucun fichier téléchargé');
         }
 
-        if (!file || !file.path) {
-            throw new Error('Le chemin du fichier est manquant ou invalide');
-        }
-        const filePath = path.resolve(file.path);
-        const fileBuffer = fs.readFileSync(filePath);
-
-        console.log("Chemin du fichier reçu:", file ? file.path : 'Chemin indéfini');
-
         // Encodez le contenu du fichier en base64
-        const fileContentBase64 = fileBuffer.toString('base64');
-
+        const fileContentBase64 = file.buffer.toString('base64');
         const imageUrlBase64 = `data:${file.mimetype};base64,${fileContentBase64}`;
-
 
         // Convertir categoryId et ownerId en entiers
         const categoryId = Number(dto.object.categoryId);
@@ -46,8 +36,8 @@ export class AnnonceService {
             data: {
                 title: dto.object.title,
                 description: dto.object.description,
-                categoryId, // categoryId est maintenant un nombre
-                ownerId, // ownerId est maintenant un nombre
+                categoryId,
+                ownerId,
                 available: dto.object.available ?? true,
                 imageUrl: imageUrlBase64, // Utilisez la chaîne base64 comme URL de l'image
             },
@@ -57,8 +47,8 @@ export class AnnonceService {
         return this.prisma.annonce.create({
             data: {
                 objectId: object.id,
-                latitude, // latitude est maintenant un nombre
-                longitude, // longitude est maintenant un nombre
+                latitude,
+                longitude,
             },
         });
     }
