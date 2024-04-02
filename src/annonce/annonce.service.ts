@@ -91,40 +91,31 @@ export class AnnonceService {
         });
     }
 
-    async removeAnnonce(id: number): Promise<{annonce: Annonce, object: Object}> {
+    async removeAnnonce(id: number): Promise<Annonce> {
         const annonce = await this.prisma.annonce.findUnique({
             where: { id },
-            include: { object: true },
         });
 
         if (!annonce) {
             throw new Error('Annonce introuvable');
         }
 
-        // Vérifiez d'abord s'il y a des réservations liées à cet objet
-        const relatedReservations = await this.prisma.reservation.findMany({
+        // Supprimez d'abord toutes les réservations liées à cet objet
+        await this.prisma.reservation.deleteMany({
             where: { objectId: annonce.objectId },
         });
 
-        // Supprimez toutes les réservations liées à cet objet
-        for (const reservation of relatedReservations) {
-            await this.prisma.reservation.delete({
-                where: { id: reservation.id },
-            });
-        }
-
-        // Une fois toutes les réservations supprimées, supprimez l'objet
-        const object = await this.prisma.object.delete({
-            where: { id: annonce.objectId },
-        });
-
-        // Supprimez l'annonce elle-même
+        // Supprimez ensuite l'annonce
         await this.prisma.annonce.delete({
             where: { id },
         });
 
-        return { annonce, object };
-    }
+        // Enfin, supprimez l'objet lui-même
+        await this.prisma.object.delete({
+            where: { id: annonce.objectId },
+        });
 
+        return annonce;
+    }
 
 }
