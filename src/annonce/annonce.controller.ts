@@ -78,7 +78,9 @@ export class AnnonceController {
     }
 
     @Delete(':id')
-    remove(@Param('id', ParseIntPipe) id: number) {
-        return this.annonceService.removeAnnonce(id);
+    @UseGuards(AuthGuard('jwt'))
+    async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+        await this.annonceService.removeAnnonce(id);
+        return;
     }
 }

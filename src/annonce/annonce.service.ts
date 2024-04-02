@@ -91,9 +91,25 @@ export class AnnonceService {
         });
     }
 
-    async removeAnnonce(id: number): Promise<Annonce> {
-        return this.prisma.annonce.delete({
+    async removeAnnonce(id: number): Promise<{annonce: Annonce, object: Object}> {
+        const annonce = await this.prisma.annonce.findUnique({
+            where: { id },
+            include: { object: true },
+        });
+
+        if (!annonce) {
+            throw new Error('Annonce introuvable');
+        }
+
+        await this.prisma.annonce.delete({
             where: { id },
         });
+
+        const object = await this.prisma.object.delete({
+            where: { id: annonce.objectId },
+        });
+
+        return { annonce, object };
     }
+
 }
