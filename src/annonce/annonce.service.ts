@@ -84,19 +84,17 @@ export class AnnonceService {
         });
     }
 
-    async updateAnnonce(id: number, updateAnnonceDto: any): Promise<Annonce> {
-
-        console.log("ID" + id);
-
+    async updateAnnonce(id: number, updateAnnonceDto: { title: string; description: string }): Promise<Annonce> {
         const annonce = await this.prisma.annonce.findUnique({
             where: { id },
-            include: { object: true },
+            include: { object: true }, // Assurez-vous d'inclure l'objet pour accéder à son ID
         });
 
         if (!annonce) {
             throw new Error('Annonce introuvable');
         }
 
+        // Mise à jour de l'objet associé à l'annonce
         await this.prisma.object.update({
             where: { id: annonce.objectId },
             data: {
@@ -105,16 +103,9 @@ export class AnnonceService {
             },
         });
 
-        const updatedAnnonce = await this.prisma.annonce.update({
-            where: { id },
-            data: {
-                latitude: updateAnnonceDto.latitude,
-                longitude: updateAnnonceDto.longitude,
-            },
-        });
-
-        return updatedAnnonce;
+        return annonce;
     }
+
 
 
     async removeAnnonce(id: number): Promise<Annonce> {
