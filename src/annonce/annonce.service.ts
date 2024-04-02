@@ -85,9 +85,12 @@ export class AnnonceService {
     }
 
     async updateAnnonce(id: number, updateAnnonceDto: any): Promise<Annonce> {
+
+        console.log("ID" + id);
+
         const annonce = await this.prisma.annonce.findUnique({
             where: { id },
-            include: { object: true }, // Inclure les détails de l'objet pour accéder à son ID
+            include: { object: true },
         });
 
         if (!annonce) {
