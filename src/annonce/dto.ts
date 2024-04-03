@@ -1,5 +1,3 @@
-// src/annonce/dto/create-annonce.dto.ts
-
 import { IsNumber, IsOptional } from 'class-validator';
 
 export class CreateAnnonceDto {

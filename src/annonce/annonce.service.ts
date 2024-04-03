@@ -3,8 +3,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Annonce, Prisma } from '@prisma/client';
 import { CreateAnnonceDto } from './dto';
 import { CreateAnnonceWithObjectDto } from './createAnnonceWithObjectDTO';
-import * as fs from 'fs';
-import * as path from 'path';
 
 @Injectable()
 export class AnnonceService {
@@ -21,17 +19,14 @@ export class AnnonceService {
             throw new Error('Aucun fichier téléchargé');
         }
 
-        // Encodez le contenu du fichier en base64
         const fileContentBase64 = file.buffer.toString('base64');
         const imageUrlBase64 = `data:${file.mimetype};base64,${fileContentBase64}`;
 
-        // Convertir categoryId et ownerId en entiers
         const categoryId = Number(dto.object.categoryId);
         const ownerId = Number(dto.object.ownerId);
         const latitude = Number(dto.latitude);
         const longitude = Number(dto.longitude);
 
-        // Création de l'objet avec l'URL du fichier sur le serveur FTP
         const object = await this.prisma.object.create({
             data: {
                 title: dto.object.title,
@@ -39,11 +34,9 @@ export class AnnonceService {
                 categoryId,
                 ownerId,
                 available: dto.object.available ?? true,
-                imageUrl: imageUrlBase64, // Utilisez la chaîne base64 comme URL de l'image
+                imageUrl: imageUrlBase64,
             },
         });
-
-        // Création de l'annonce associée à cet objet
         return this.prisma.annonce.create({
             data: {
                 objectId: object.id,
@@ -84,54 +77,22 @@ export class AnnonceService {
         });
     }
 
-    async updateAnnonce(id: number, updateAnnonceDto: { title: string; description: string }): Promise<Annonce> {
-        const annonce = await this.prisma.annonce.findUnique({
-            where: { id },
-            include: { object: true }, // Assurez-vous d'inclure l'objet pour accéder à son ID
-        });
-
-        if (!annonce) {
-            throw new Error('Annonce introuvable');
-        }
-
-        // Mise à jour de l'objet associé à l'annonce
-        await this.prisma.object.update({
-            where: { id: annonce.objectId },
-            data: {
-                title: updateAnnonceDto.title,
-                description: updateAnnonceDto.description,
-            },
-        });
-
-        return annonce;
-    }
-
-
-
     async removeAnnonce(id: number): Promise<Annonce> {
         const annonce = await this.prisma.annonce.findUnique({
             where: { id },
         });
-
         if (!annonce) {
             throw new Error('Annonce introuvable');
         }
-
-        // Supprimez d'abord toutes les réservations liées à cet objet
         await this.prisma.reservation.deleteMany({
             where: { objectId: annonce.objectId },
         });
-
-        // Supprimez ensuite l'annonce
         await this.prisma.annonce.delete({
             where: { id },
         });
-
-        // Enfin, supprimez l'objet lui-même
         await this.prisma.object.delete({
             where: { id: annonce.objectId },
         });
-
         return annonce;
     }
 
