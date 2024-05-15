@@ -70,6 +70,27 @@ export class AnnonceService {
         });
     }
 
+    async findAnnoncesByCategory(categoryId: number): Promise<Annonce[]> {
+        const result = await this.prisma.annonce.findMany({
+            where: {
+                object: {
+                    categoryId,
+                },
+            },
+            include: {
+                object: {
+                    include: {
+                        owner: true,
+                        category: true,
+                    }
+                }
+            },
+        });
+        return result;
+    }
+
+
+
 
     async findOneAnnonce(id: number): Promise<Annonce | null> {
         return this.prisma.annonce.findUnique({

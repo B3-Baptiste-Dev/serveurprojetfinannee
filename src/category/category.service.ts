@@ -21,6 +21,17 @@ export class CategoryService {
         });
     }
 
+    async search(query: string) {
+        return this.prisma.category.findMany({
+            where: {
+                name: {
+                    contains: query,
+                    mode: 'insensitive', // Recherche insensible à la casse
+                },
+            },
+        });
+    }
+
     async findOne(id: number) {
         const category = await this.prisma.category.findUnique({
             where: { id },

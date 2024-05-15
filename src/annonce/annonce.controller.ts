@@ -67,6 +67,11 @@ export class AnnonceController {
         return this.annonceService.findAllAnnoncesWithObjects(Number(userId));
     }
 
+    @Get('by-category')
+    findByCategory(@Query('categoriesId') categoryId?: string) {
+        return this.annonceService.findAnnoncesByCategory(Number(categoryId));
+    }
+
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
         return this.annonceService.findOneAnnonce(id);

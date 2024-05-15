@@ -21,6 +21,11 @@ export class CategoryController {
         return this.categoryService.findAllWithObjects(id);
     }
 
+    @Get('search')
+    search(@Query('query') query: string) {
+        return this.categoryService.search(query);
+    }
+
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
         return this.categoryService.findOne(id);
