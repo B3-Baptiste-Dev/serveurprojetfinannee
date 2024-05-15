@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, ParseIntPipe, Query } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto';
 
@@ -14,6 +14,11 @@ export class CategoryController {
     @Get()
     findAll() {
         return this.categoryService.findAll();
+    }
+
+    @Get('with-objects')
+    findAllWithObjects(@Query('categorieId') id: number) { // Typing categorieId as number
+        return this.categoryService.findAllWithObjects(id);
     }
 
     @Get(':id')

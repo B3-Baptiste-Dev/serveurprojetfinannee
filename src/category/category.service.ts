@@ -14,6 +14,13 @@ export class CategoryService {
         return this.prisma.category.findMany();
     }
 
+    async findAllWithObjects(categorieId: number) {
+        return this.prisma.category.findMany({
+            where: { id: categorieId },
+            include: { objects: true },
+        });
+    }
+
     async findOne(id: number) {
         const category = await this.prisma.category.findUnique({
             where: { id },

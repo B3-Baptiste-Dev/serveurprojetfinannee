@@ -12,11 +12,10 @@ import { ReviewModule } from './review/review.module';
 import {ObjectModule} from "./object/object.module";
 import { AnnonceModule } from './annonce/annonce.module';
 import { UserModule } from './user/user.module';
-import { FtpService } from './ftp/ftp.service';
 
 @Module({
   imports: [PrismaModule, AuthModule, ConfigModule.forRoot(), CategoryModule, ReservationModule, MessageModule, ReviewModule, ObjectModule, AnnonceModule, UserModule],
   controllers: [AppController],
-  providers: [AppService, ResponseHelperService, FtpService],
+  providers: [AppService, ResponseHelperService],
 })
 export class AppModule {}
