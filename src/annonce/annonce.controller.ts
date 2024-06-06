@@ -16,8 +16,9 @@ import { AnnonceService } from './annonce.service';
 import { CreateAnnonceWithObjectDto } from './createAnnonceWithObjectDTO';
 import { Prisma } from '@prisma/client';
 import { CreateObjectDto } from '../object/dto';
+import { ApiTags } from '@nestjs/swagger';
 
-
+@ApiTags('Annonces')
 @Controller('annonces')
 export class AnnonceController {
     constructor(private readonly annonceService: AnnonceService) {}

@@ -2,7 +2,9 @@ import { Body, Controller, Get, Param, Post, ParseIntPipe, UseGuards, Req } from
 import { MessageService } from './message.service';
 import { CreateMessageDto } from './dto';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Messages')
 @Controller('messages')
 export class MessageController {
     constructor(private readonly messageService: MessageService) {}

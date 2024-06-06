@@ -69,11 +69,11 @@ async function main() {
     // Créer des objets
     await prisma.object.createMany({
         data: [
-            { title: 'Smartphone ancien', description: 'Un smartphone légèrement utilisé.', categoryId: electronique.id, ownerId: user1.id, available: true, imageUrl: 'https://via.placeholder.com/150' },
-            { title: 'Veste en cuir', description: 'Veste en cuir noir, taille M.', categoryId: vetements.id, ownerId: user2.id, available: true, imageUrl: 'https://via.placeholder.com/150' },
-            { title: 'Vélo de montagne', description: 'Parfait pour les terrains difficiles.', categoryId: sport.id, ownerId: user3.id, available: true, imageUrl: 'https://via.placeholder.com/150' },
-            { title: 'Perceuse électrique', description: 'Idéale pour tous travaux de bricolage.', categoryId: bricolage.id, ownerId: user1.id, available: true, imageUrl: 'https://via.placeholder.com/150' },
-            { title: 'Camera DSLR', description: 'Idéale pour les amateurs de photographie.', categoryId: electronique.id, ownerId: user4.id, available: true, imageUrl: 'https://via.placeholder.com/150' }
+            { title: 'Perceuse électrique', description: 'Idéale pour tous travaux de bricolage.', categoryId: bricolage.id, ownerId: user1.id, available: true, imageUrl: '' },
+            { title: 'Scie circulaire', description: 'Parfaite pour couper du bois et des matériaux de construction.', categoryId: bricolage.id, ownerId: user2.id, available: true, imageUrl: '' },
+            { title: 'Marteau', description: 'Indispensable pour tout projet de bricolage.', categoryId: bricolage.id, ownerId: user3.id, available: true, imageUrl: '' },
+            { title: 'Tournevis électrique', description: 'Pour un vissage facile et rapide.', categoryId: bricolage.id, ownerId: user1.id, available: true, imageUrl: '' },
+            { title: 'Établi', description: 'Un espace de travail solide et pratique.', categoryId: bricolage.id, ownerId: user4.id, available: true, imageUrl: '' }
         ]
     });
 

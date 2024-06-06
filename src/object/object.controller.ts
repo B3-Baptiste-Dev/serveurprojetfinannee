@@ -1,7 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, ParseIntPipe } from '@nestjs/common';
 import { ObjectService } from './object.service';
 import { CreateObjectDto, UpdateObjectDto } from './dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Objects')
 @Controller('object')
 export class ObjectController {
     constructor(private readonly objectService: ObjectService) {}

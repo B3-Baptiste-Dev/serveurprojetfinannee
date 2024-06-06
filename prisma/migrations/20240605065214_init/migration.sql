@@ -28,6 +28,7 @@ CREATE TABLE "Object" (
     "ownerId" INTEGER NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
+    "imageUrl" TEXT NOT NULL,
     "categoryId" INTEGER NOT NULL,
     "available" BOOLEAN NOT NULL DEFAULT true,
 
