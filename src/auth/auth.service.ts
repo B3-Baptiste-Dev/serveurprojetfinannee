@@ -1,3 +1,4 @@
+// AuthService.ts
 import {
   ForbiddenException,
   Injectable,
@@ -11,7 +12,6 @@ import { ResponseHelperService } from 'src/response-helper/response-helper.servi
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -22,23 +22,19 @@ export class AuthService {
 
   // Login user
   async loginUser(dto: LoginDTO) {
-    // Rechercher l'utilisateur par email
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
 
-    // Si l'utilisateur n'existe pas, lancer une exception
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    // Vérifier que le mot de passe correspond
     const isPasswordMatching = await bcrypt.compare(dto.password, user.password);
     if (!isPasswordMatching) {
       throw new UnauthorizedException('Incorrect password');
     }
 
-    // Si le mot de passe correspond, générer et retourner un JWT
     const payload = { email: user.email, sub: user.id };
     return {
       access_token: this.jwtService.sign(payload),
@@ -48,7 +44,6 @@ export class AuthService {
 
   // Register a new user
   async registerUser(dto: RegisterDTO) {
-    // * Check if a user with the given email already exists
     const userExist = await this.prisma.user.findUnique({
       where: {
         email: dto.email,
@@ -61,11 +56,9 @@ export class AuthService {
       );
     }
 
-    // * Hash the user's password using bcrypt
     const salt = await bcrypt.genSalt();
     const hash = await bcrypt.hash(dto.password, salt);
 
-    // * Create a new user with the provided data
     const created = await this.prisma.user.create({
       data: {
         first_name: dto.firstName,
@@ -76,6 +69,9 @@ export class AuthService {
     });
     delete created.password;
 
-    return this.responseHelperService.returnSuccess(created);
+    const payload = { email: created.email, sub: created.id };
+    const token = this.jwtService.sign(payload);
+
+    return this.responseHelperService.returnSuccess({ access_token: token, user_id: created.id });
   }
 }

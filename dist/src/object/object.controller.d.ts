@@ -13,27 +13,11 @@ export declare class ObjectController {
         available: boolean;
     }>;
     findAll(): Promise<({
-        owner: {
-            id: number;
-            email: string;
-            password: string;
-            first_name: string;
-            last_name: string;
-            location: string;
-        };
         category: {
             id: number;
             name: string;
             description: string;
         };
-        reviews: {
-            id: number;
-            rating: number;
-            comment: string;
-            objectId: number;
-            userId: number;
-            createdAt: Date;
-        }[];
         reservations: {
             id: number;
             objectId: number;
@@ -42,6 +26,22 @@ export declare class ObjectController {
             endDate: Date;
             status: string;
         }[];
+        reviews: {
+            id: number;
+            rating: number;
+            comment: string;
+            objectId: number;
+            userId: number;
+            createdAt: Date;
+        }[];
+        owner: {
+            id: number;
+            email: string;
+            password: string;
+            first_name: string;
+            last_name: string;
+            location: string;
+        };
     } & {
         id: number;
         ownerId: number;
@@ -52,27 +52,11 @@ export declare class ObjectController {
         available: boolean;
     })[]>;
     findOne(id: number): Promise<{
-        owner: {
-            id: number;
-            email: string;
-            password: string;
-            first_name: string;
-            last_name: string;
-            location: string;
-        };
         category: {
             id: number;
             name: string;
             description: string;
         };
-        reviews: {
-            id: number;
-            rating: number;
-            comment: string;
-            objectId: number;
-            userId: number;
-            createdAt: Date;
-        }[];
         reservations: {
             id: number;
             objectId: number;
@@ -81,6 +65,22 @@ export declare class ObjectController {
             endDate: Date;
             status: string;
         }[];
+        reviews: {
+            id: number;
+            rating: number;
+            comment: string;
+            objectId: number;
+            userId: number;
+            createdAt: Date;
+        }[];
+        owner: {
+            id: number;
+            email: string;
+            password: string;
+            first_name: string;
+            last_name: string;
+            location: string;
+        };
     } & {
         id: number;
         ownerId: number;

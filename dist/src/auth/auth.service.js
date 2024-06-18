@@ -58,7 +58,9 @@ let AuthService = class AuthService {
             },
         });
         delete created.password;
-        return this.responseHelperService.returnSuccess(created);
+        const payload = { email: created.email, sub: created.id };
+        const token = this.jwtService.sign(payload);
+        return this.responseHelperService.returnSuccess({ access_token: token, user_id: created.id });
     }
 };
 exports.AuthService = AuthService;

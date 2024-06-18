@@ -31,7 +31,8 @@ __decorate([
 ], RegisterDTO.prototype, "lastName", void 0);
 __decorate([
     (0, class_validator_1.IsString)({ message: 'Please enter a valid password' }),
-    (0, class_validator_1.MinLength)(6, { message: 'Password should be at least 6 characters long' }),
+    (0, class_validator_1.MinLength)(8, { message: 'Password should be at least 8 characters long' }),
+    (0, class_validator_1.Matches)(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$&*~]).{8,}$/, { message: 'Password should contain at least one uppercase letter, one lowercase letter, one number, and one special character' }),
     __metadata("design:type", String)
 ], RegisterDTO.prototype, "password", void 0);
 //# sourceMappingURL=register.dto.js.map
