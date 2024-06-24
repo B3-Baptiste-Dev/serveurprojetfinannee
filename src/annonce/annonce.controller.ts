@@ -23,6 +23,15 @@ import { ApiTags } from '@nestjs/swagger';
 export class AnnonceController {
     constructor(private readonly annonceService: AnnonceService) {}
 
+    @Get()
+    findAll() {
+        return this.annonceService.findAllAnnonces();
+    }
+
+    @Get('with-objects')
+    findAllWithObjects(@Query('userId') userId?: string) {
+        return this.annonceService.findAllAnnoncesWithObjects(Number(userId));
+    }
     @Post()
     @UseInterceptors(FileInterceptor('image'))
     async create(
@@ -58,15 +67,7 @@ export class AnnonceController {
         return this.annonceService.createAnnonceWithObject(createAnnonceWithObjectDto, file);
     }
 
-    @Get()
-    findAll() {
-        return this.annonceService.findAllAnnonces();
-    }
 
-    @Get('with-objects')
-    findAllWithObjects(@Query('userId') userId?: string) {
-        return this.annonceService.findAllAnnoncesWithObjects(Number(userId));
-    }
 
     @Get('by-category')
     findByCategory(@Query('categoriesId') categoryId?: string) {

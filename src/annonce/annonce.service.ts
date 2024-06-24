@@ -8,6 +8,30 @@ import { CreateAnnonceWithObjectDto } from './createAnnonceWithObjectDTO';
 export class AnnonceService {
     constructor(private prisma: PrismaService) {}
 
+    async findAllAnnonces(): Promise<Annonce[]> {
+        return this.prisma.annonce.findMany({
+            include: {
+                object: true,
+            },
+        });
+    }
+
+    async findAllAnnoncesWithObjects(userId: number): Promise<any[]> {
+        return this.prisma.annonce.findMany({
+            where: {
+                object: {
+                    ownerId: {
+                        not: userId,
+                    },
+                },
+            },
+            include: {
+                object: true,
+            },
+        });
+    }
+
+
     async createAnnonce(createAnnonceDto: CreateAnnonceDto): Promise<Annonce> {
         return this.prisma.annonce.create({
             data: createAnnonceDto,
@@ -47,28 +71,7 @@ export class AnnonceService {
     }
 
 
-    async findAllAnnonces(): Promise<Annonce[]> {
-        return this.prisma.annonce.findMany({
-            include: {
-                object: true,
-            },
-        });
-    }
 
-    async findAllAnnoncesWithObjects(userId: number): Promise<any[]> {
-        return this.prisma.annonce.findMany({
-            where: {
-                object: {
-                    ownerId: {
-                        not: userId,
-                    },
-                },
-            },
-            include: {
-                object: true,
-            },
-        });
-    }
 
     async findAnnoncesByCategory(categoryId: number): Promise<Annonce[]> {
         const result = await this.prisma.annonce.findMany({

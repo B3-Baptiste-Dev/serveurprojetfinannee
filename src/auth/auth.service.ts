@@ -1,4 +1,3 @@
-// AuthService.ts
 import {
   ForbiddenException,
   Injectable,
@@ -7,10 +6,10 @@ import {
 } from '@nestjs/common';
 import { LoginDTO } from './dto/login.dto';
 import { RegisterDTO } from './dto/register.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { ResponseHelperService } from 'src/response-helper/response-helper.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { PrismaService } from '../prisma/prisma.service';
+import { ResponseHelperService } from '../response-helper/response-helper.service';
 
 @Injectable()
 export class AuthService {
