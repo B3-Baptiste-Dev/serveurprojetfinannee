@@ -23,6 +23,7 @@ import { ApiTags } from '@nestjs/swagger';
 export class AnnonceController {
     constructor(private readonly annonceService: AnnonceService) {}
 
+    @UseGuards(AuthGuard('jwt'))
     @Post()
     @UseInterceptors(FileInterceptor('image'))
     async create(

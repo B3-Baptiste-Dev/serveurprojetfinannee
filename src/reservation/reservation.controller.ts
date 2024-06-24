@@ -1,13 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { ReservationService } from './reservation.service';
 import { CreateReservationDto, UpdateReservationDto } from './dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Reservations')
 @Controller('reservations')
 export class ReservationController {
     constructor(private readonly reservationService: ReservationService) {}
 
+    @UseGuards(AuthGuard('jwt'))
     @Post()
     create(@Body() createReservationDto: CreateReservationDto) {
         return this.reservationService.create(createReservationDto);
