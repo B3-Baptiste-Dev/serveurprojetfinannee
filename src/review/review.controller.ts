@@ -1,13 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { CreateReviewDto, UpdateReviewDto } from './dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Reviews')
 @Controller('reviews')
 export class ReviewController {
     constructor(private readonly reviewService: ReviewService) {}
 
+    @UseGuards(AuthGuard('jwt'))
     @Post()
     create(@Body() createReviewDto: CreateReviewDto) {
         return this.reviewService.create(createReviewDto);

@@ -1,13 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { ObjectService } from './object.service';
 import { CreateObjectDto, UpdateObjectDto } from './dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Objects')
 @Controller('object')
 export class ObjectController {
     constructor(private readonly objectService: ObjectService) {}
 
+    @UseGuards(AuthGuard('jwt'))
     @Post()
     create(@Body() createObjectDto: CreateObjectDto) {
         return this.objectService.create(createObjectDto);

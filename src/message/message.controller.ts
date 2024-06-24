@@ -9,6 +9,7 @@ import { ApiTags } from '@nestjs/swagger';
 export class MessageController {
     constructor(private readonly messageService: MessageService) {}
 
+    @UseGuards(AuthGuard('jwt'))
     @Post()
     create(@Body() createMessageDto: CreateMessageDto) {
         return this.messageService.create(createMessageDto);
