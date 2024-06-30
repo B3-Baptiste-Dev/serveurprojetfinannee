@@ -16,7 +16,7 @@ async function main() {
     await prisma.category.deleteMany({});
 
     // Créer des catégories
-    const categories = await prisma.category.createMany({
+    await prisma.category.createMany({
         data: [
             { name: 'Outils électriques', description: 'Outils électriques pour divers travaux' },
             { name: 'Jardinage', description: 'Outils pour entretenir le jardin' },
@@ -24,6 +24,13 @@ async function main() {
             { name: 'Équipement de construction', description: 'Équipements pour la construction et la rénovation' }
         ]
     });
+
+    // Récupérer les IDs des catégories
+    const categories = await prisma.category.findMany();
+    const categoriesMap = categories.reduce((acc, category) => {
+        acc[category.name] = category.id;
+        return acc;
+    }, {} as { [key: string]: number });
 
     // Hasher les mots de passe
     const passwords = await Promise.all([
@@ -34,7 +41,7 @@ async function main() {
     ]);
 
     // Créer des utilisateurs
-    const users = await prisma.user.createMany({
+    await prisma.user.createMany({
         data: [
             { email: 'jean.dupont@example.com', password: passwords[0], first_name: 'Jean', last_name: 'Dupont', location: 'Lille, France' },
             { email: 'marie.durand@example.com', password: passwords[1], first_name: 'Marie', last_name: 'Durand', location: 'Lille, France' },
@@ -43,26 +50,26 @@ async function main() {
         ]
     });
 
-    const createdUsers = await prisma.user.findMany({});
+    const createdUsers = await prisma.user.findMany();
     const userIds = createdUsers.map(user => user.id);
 
     // Créer des objets
-    const objects = await prisma.object.createMany({
+    await prisma.object.createMany({
         data: [
-            { title: 'Perceuse électrique', description: 'Idéale pour tous travaux de bricolage.', categoryId: 1, ownerId: userIds[0], available: true, imageUrl: '' },
-            { title: 'Scie circulaire', description: 'Parfaite pour couper du bois et des matériaux de construction.', categoryId: 1, ownerId: userIds[1], available: true, imageUrl: '' },
-            { title: 'Marteau', description: 'Indispensable pour tout projet de bricolage.', categoryId: 1, ownerId: userIds[2], available: true, imageUrl: '' },
-            { title: 'Tournevis électrique', description: 'Pour un vissage facile et rapide.', categoryId: 1, ownerId: userIds[0], available: true, imageUrl: '' },
-            { title: 'Visseuse', description: 'Pour visser et dévisser facilement.', categoryId: 1, ownerId: userIds[1], available: true, imageUrl: '' },
-            { title: 'Ponceuse', description: 'Parfaite pour poncer toutes les surfaces.', categoryId: 1, ownerId: userIds[2], available: true, imageUrl: '' },
-            { title: 'Rabot électrique', description: 'Pour un rabotage précis et efficace.', categoryId: 1, ownerId: userIds[3], available: true, imageUrl: '' },
-            { title: 'Tondeuse', description: 'Pour une pelouse impeccable.', categoryId: 2, ownerId: userIds[0], available: true, imageUrl: '' },
-            { title: 'Scarificateur', description: 'Pour entretenir votre pelouse en profondeur.', categoryId: 2, ownerId: userIds[1], available: true, imageUrl: '' },
-            { title: 'Compresseur', description: 'Pour gonfler et nettoyer avec puissance.', categoryId: 1, ownerId: userIds[2], available: true, imageUrl: '' },
-            { title: 'Débroussailleuse', description: 'Idéale pour couper les hautes herbes.', categoryId: 2, ownerId: userIds[3], available: true, imageUrl: '' },
-            { title: 'Échelle', description: 'Pour atteindre les hauteurs en toute sécurité.', categoryId: 3, ownerId: userIds[0], available: true, imageUrl: '' },
-            { title: 'Escabeau', description: 'Pratique pour les petits travaux en hauteur.', categoryId: 3, ownerId: userIds[1], available: true, imageUrl: '' },
-            { title: 'Échafaudage', description: 'Idéal pour les travaux de façade.', categoryId: 3, ownerId: userIds[2], available: true, imageUrl: '' }
+            { title: 'Perceuse électrique', description: 'Idéale pour tous travaux de bricolage.', categoryId: categoriesMap['Outils électriques'], ownerId: userIds[0], available: true, imageUrl: '' },
+            { title: 'Scie circulaire', description: 'Parfaite pour couper du bois et des matériaux de construction.', categoryId: categoriesMap['Outils électriques'], ownerId: userIds[1], available: true, imageUrl: '' },
+            { title: 'Marteau', description: 'Indispensable pour tout projet de bricolage.', categoryId: categoriesMap['Outils électriques'], ownerId: userIds[2], available: true, imageUrl: '' },
+            { title: 'Tournevis électrique', description: 'Pour un vissage facile et rapide.', categoryId: categoriesMap['Outils électriques'], ownerId: userIds[0], available: true, imageUrl: '' },
+            { title: 'Visseuse', description: 'Pour visser et dévisser facilement.', categoryId: categoriesMap['Outils électriques'], ownerId: userIds[1], available: true, imageUrl: '' },
+            { title: 'Ponceuse', description: 'Parfaite pour poncer toutes les surfaces.', categoryId: categoriesMap['Outils électriques'], ownerId: userIds[2], available: true, imageUrl: '' },
+            { title: 'Rabot électrique', description: 'Pour un rabotage précis et efficace.', categoryId: categoriesMap['Outils électriques'], ownerId: userIds[3], available: true, imageUrl: '' },
+            { title: 'Tondeuse', description: 'Pour une pelouse impeccable.', categoryId: categoriesMap['Jardinage'], ownerId: userIds[0], available: true, imageUrl: '' },
+            { title: 'Scarificateur', description: 'Pour entretenir votre pelouse en profondeur.', categoryId: categoriesMap['Jardinage'], ownerId: userIds[1], available: true, imageUrl: '' },
+            { title: 'Compresseur', description: 'Pour gonfler et nettoyer avec puissance.', categoryId: categoriesMap['Outils électriques'], ownerId: userIds[2], available: true, imageUrl: '' },
+            { title: 'Débroussailleuse', description: 'Idéale pour couper les hautes herbes.', categoryId: categoriesMap['Jardinage'], ownerId: userIds[3], available: true, imageUrl: '' },
+            { title: 'Échelle', description: 'Pour atteindre les hauteurs en toute sécurité.', categoryId: categoriesMap['Élévation'], ownerId: userIds[0], available: true, imageUrl: '' },
+            { title: 'Escabeau', description: 'Pratique pour les petits travaux en hauteur.', categoryId: categoriesMap['Élévation'], ownerId: userIds[1], available: true, imageUrl: '' },
+            { title: 'Échafaudage', description: 'Idéal pour les travaux de façade.', categoryId: categoriesMap['Élévation'], ownerId: userIds[2], available: true, imageUrl: '' }
         ]
     });
 
