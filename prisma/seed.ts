@@ -15,73 +15,92 @@ async function main() {
     await prisma.user.deleteMany({});
     await prisma.category.deleteMany({});
 
-    // Créer des catégories spécifiques au bricolage
-    const categoriesData = [
-        { name: 'Électroportatif', description: 'Outils électriques portatifs' },
-        { name: 'Manuels', description: 'Outils manuels' },
-        { name: 'Mesure', description: 'Outils de mesure' },
-        { name: 'Peinture', description: 'Matériel de peinture' },
-        { name: 'Jardinage', description: 'Outils de jardinage' },
-        { name: 'Sécurité', description: 'Équipements de sécurité' }
-    ];
-
-    const categories = await Promise.all(categoriesData.map(category => prisma.category.create({ data: category })));
+    // Créer des catégories
+    const categories = await prisma.category.createMany({
+        data: [
+            { name: 'Outils électriques', description: 'Outils électriques pour divers travaux' },
+            { name: 'Jardinage', description: 'Outils pour entretenir le jardin' },
+            { name: 'Élévation', description: 'Outils pour travailler en hauteur' },
+            { name: 'Équipement de construction', description: 'Équipements pour la construction et la rénovation' }
+        ]
+    });
 
     // Hasher les mots de passe
-    const password = await bcrypt.hash('motdepasse123', 10);
+    const passwords = await Promise.all([
+        bcrypt.hash('motdepasse123', 10),
+        bcrypt.hash('motdepasse456', 10),
+        bcrypt.hash('motdepasse789', 10),
+        bcrypt.hash('motdepasse101112', 10)
+    ]);
 
-    // Créer des utilisateurs avec des noms réalistes
-    const usersData = [
-        { email: 'jean.dupont@example.com', password, first_name: 'Jean', last_name: 'Dupont', location: 'Lille, France' },
-        { email: 'marie.durand@example.com', password, first_name: 'Marie', last_name: 'Durand', location: 'Lille, France' },
-        { email: 'paul.martin@example.com', password, first_name: 'Paul', last_name: 'Martin', location: 'Lille, France' },
-        { email: 'anne.lefevre@example.com', password, first_name: 'Anne', last_name: 'Lefevre', location: 'Lille, France' },
-        { email: 'lucie.moreau@example.com', password, first_name: 'Lucie', last_name: 'Moreau', location: 'Lille, France' },
-        { email: 'julien.rousseau@example.com', password, first_name: 'Julien', last_name: 'Rousseau', location: 'Lille, France' },
-        { email: 'emma.fernandez@example.com', password, first_name: 'Emma', last_name: 'Fernandez', location: 'Lille, France' },
-        { email: 'nicolas.michel@example.com', password, first_name: 'Nicolas', last_name: 'Michel', location: 'Lille, France' },
-        { email: 'claire.robin@example.com', password, first_name: 'Claire', last_name: 'Robin', location: 'Lille, France' },
-        { email: 'pierre.robert@example.com', password, first_name: 'Pierre', last_name: 'Robert', location: 'Lille, France' }
-    ];
+    // Créer des utilisateurs
+    const users = await prisma.user.createMany({
+        data: [
+            { email: 'jean.dupont@example.com', password: passwords[0], first_name: 'Jean', last_name: 'Dupont', location: 'Lille, France' },
+            { email: 'marie.durand@example.com', password: passwords[1], first_name: 'Marie', last_name: 'Durand', location: 'Lille, France' },
+            { email: 'luc.martin@example.com', password: passwords[2], first_name: 'Luc', last_name: 'Martin', location: 'Lille, France' },
+            { email: 'sophie.legrand@example.com', password: passwords[3], first_name: 'Sophie', last_name: 'Legrand', location: 'Lille, France' }
+        ]
+    });
 
-    const users = await Promise.all(usersData.map(user => prisma.user.create({ data: user })));
+    const createdUsers = await prisma.user.findMany({});
+    const userIds = createdUsers.map(user => user.id);
 
-    // Créer des objets avec des descriptions réalistes
-    const objectsData = [
-        { title: 'Perceuse électrique', description: 'Perceuse électrique performante pour tous types de travaux.', categoryId: categories[0].id, ownerId: users[0].id, available: true, imageUrl: '' },
-        { title: 'Scie circulaire', description: 'Scie circulaire de haute qualité, idéale pour couper du bois et des matériaux de construction.', categoryId: categories[0].id, ownerId: users[1].id, available: true, imageUrl: '' },
-        { title: 'Marteau', description: 'Marteau robuste, indispensable pour tous vos projets de bricolage.', categoryId: categories[1].id, ownerId: users[2].id, available: true, imageUrl: '' },
-        { title: 'Tournevis électrique', description: 'Tournevis électrique pratique pour un vissage facile et rapide.', categoryId: categories[0].id, ownerId: users[3].id, available: true, imageUrl: '' },
-        { title: 'Établi', description: 'Établi solide et pratique pour un espace de travail optimal.', categoryId: categories[1].id, ownerId: users[4].id, available: true, imageUrl: '' },
-        { title: 'Multimètre', description: 'Multimètre précis pour toutes vos mesures électriques.', categoryId: categories[2].id, ownerId: users[5].id, available: true, imageUrl: '' },
-        { title: 'Pinceau large', description: 'Pinceau large de haute qualité pour vos travaux de peinture.', categoryId: categories[3].id, ownerId: users[6].id, available: true, imageUrl: '' },
-        { title: 'Sécateur', description: 'Sécateur robuste et précis pour vos travaux de jardinage.', categoryId: categories[4].id, ownerId: users[7].id, available: true, imageUrl: '' },
-        { title: 'Casque de sécurité', description: 'Casque de sécurité confortable pour protéger votre tête pendant les travaux.', categoryId: categories[5].id, ownerId: users[8].id, available: true, imageUrl: '' },
-        { title: 'Gants de protection', description: 'Gants de protection résistants pour tous types de travaux.', categoryId: categories[5].id, ownerId: users[9].id, available: true, imageUrl: '' }
-    ];
+    // Créer des objets
+    const objects = await prisma.object.createMany({
+        data: [
+            { title: 'Perceuse électrique', description: 'Idéale pour tous travaux de bricolage.', categoryId: 1, ownerId: userIds[0], available: true, imageUrl: '' },
+            { title: 'Scie circulaire', description: 'Parfaite pour couper du bois et des matériaux de construction.', categoryId: 1, ownerId: userIds[1], available: true, imageUrl: '' },
+            { title: 'Marteau', description: 'Indispensable pour tout projet de bricolage.', categoryId: 1, ownerId: userIds[2], available: true, imageUrl: '' },
+            { title: 'Tournevis électrique', description: 'Pour un vissage facile et rapide.', categoryId: 1, ownerId: userIds[0], available: true, imageUrl: '' },
+            { title: 'Visseuse', description: 'Pour visser et dévisser facilement.', categoryId: 1, ownerId: userIds[1], available: true, imageUrl: '' },
+            { title: 'Ponceuse', description: 'Parfaite pour poncer toutes les surfaces.', categoryId: 1, ownerId: userIds[2], available: true, imageUrl: '' },
+            { title: 'Rabot électrique', description: 'Pour un rabotage précis et efficace.', categoryId: 1, ownerId: userIds[3], available: true, imageUrl: '' },
+            { title: 'Tondeuse', description: 'Pour une pelouse impeccable.', categoryId: 2, ownerId: userIds[0], available: true, imageUrl: '' },
+            { title: 'Scarificateur', description: 'Pour entretenir votre pelouse en profondeur.', categoryId: 2, ownerId: userIds[1], available: true, imageUrl: '' },
+            { title: 'Compresseur', description: 'Pour gonfler et nettoyer avec puissance.', categoryId: 1, ownerId: userIds[2], available: true, imageUrl: '' },
+            { title: 'Débroussailleuse', description: 'Idéale pour couper les hautes herbes.', categoryId: 2, ownerId: userIds[3], available: true, imageUrl: '' },
+            { title: 'Échelle', description: 'Pour atteindre les hauteurs en toute sécurité.', categoryId: 3, ownerId: userIds[0], available: true, imageUrl: '' },
+            { title: 'Escabeau', description: 'Pratique pour les petits travaux en hauteur.', categoryId: 3, ownerId: userIds[1], available: true, imageUrl: '' },
+            { title: 'Échafaudage', description: 'Idéal pour les travaux de façade.', categoryId: 3, ownerId: userIds[2], available: true, imageUrl: '' }
+        ]
+    });
 
-    const objects = await Promise.all(objectsData.map(object => prisma.object.create({ data: object })));
+    const createdObjects = await prisma.object.findMany({});
+    const objectIds = createdObjects.map(object => object.id);
 
-    // Ajouter des annonces avec des coordonnées spécifiques autour de Lille
-    const annoncesData = objects.map((object, i) => ({
-        objectId: object.id,
-        latitude: 50.6292 + (Math.random() - 0.5) * 0.1,  // Coordonnées autour de Lille
-        longitude: 3.0573 + (Math.random() - 0.5) * 0.1, // Coordonnées autour de Lille
-    }));
-
+    // Ajouter des annonces avec des coordonnées spécifiques pour les nouveaux objets autour de Lille
     await prisma.annonce.createMany({
-        data: annoncesData,
+        data: [
+            { objectId: objectIds[0], latitude: 50.62925, longitude: 3.057256 },
+            { objectId: objectIds[1], latitude: 50.634, longitude: 3.051 },
+            { objectId: objectIds[2], latitude: 50.628, longitude: 3.057 },
+            { objectId: objectIds[3], latitude: 50.623, longitude: 3.062 },
+            { objectId: objectIds[4], latitude: 50.627, longitude: 3.059 },
+            { objectId: objectIds[5], latitude: 50.631, longitude: 3.055 },
+            { objectId: objectIds[6], latitude: 50.632, longitude: 3.058 },
+            { objectId: objectIds[7], latitude: 50.630, longitude: 3.060 },
+            { objectId: objectIds[8], latitude: 50.624, longitude: 3.056 },
+            { objectId: objectIds[9], latitude: 50.625, longitude: 3.061 },
+            { objectId: objectIds[10], latitude: 50.629, longitude: 3.057 },
+            { objectId: objectIds[11], latitude: 50.626, longitude: 3.052 },
+            { objectId: objectIds[12], latitude: 50.628, longitude: 3.054 },
+            { objectId: objectIds[13], latitude: 50.630, longitude: 3.053 }
+        ]
     });
 
     // Ajouter des messages entre les utilisateurs
-    const messagesData = Array.from({ length: 50 }, (_, i) => ({
-        content: `Message ${i + 1}: Bonjour, je suis intéressé par votre ${objects[i % objects.length].title}. Est-il toujours disponible ?`,
-        sentById: users[i % users.length].id,
-        receivedById: users[(i + 1) % users.length].id,
-    }));
-
     await prisma.message.createMany({
-        data: messagesData,
+        data: [
+            { content: 'Bonjour, la perceuse électrique est-elle toujours disponible ?', sentById: userIds[1], receivedById: userIds[0] },
+            { content: 'Oui, elle est toujours disponible. Souhaitez-vous la voir ?', sentById: userIds[0], receivedById: userIds[1] },
+            { content: 'Pouvons-nous nous rencontrer ce weekend pour voir la scie circulaire ?', sentById: userIds[2], receivedById: userIds[1] },
+            { content: 'Oui, ce weekend me convient parfaitement.', sentById: userIds[1], receivedById: userIds[2] },
+            { content: 'Est-ce que la débroussailleuse est toujours en bon état ?', sentById: userIds[3], receivedById: userIds[0] },
+            { content: 'Elle est comme neuve. Très peu utilisée.', sentById: userIds[0], receivedById: userIds[3] },
+            { content: 'Je suis intéressé par votre tondeuse. Est-elle encore sous garantie ?', sentById: userIds[0], receivedById: userIds[3] },
+            { content: 'Non, elle n\'est plus sous garantie, mais elle fonctionne parfaitement.', sentById: userIds[3], receivedById: userIds[0] }
+        ]
     });
 
     console.log('Données de seed supplémentaires ajoutées');
