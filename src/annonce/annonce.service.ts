@@ -115,10 +115,23 @@ export class AnnonceService {
     }
 
     async updateAnnonce(id: number, updateAnnonceDto: any): Promise<Annonce> {
-        return this.prisma.annonce.update({
+        const { title, description, ...otherFields } = updateAnnonceDto;
+        const annonce = await this.prisma.annonce.update({
             where: { id },
-            data: updateAnnonceDto,
+            data: {
+                ...otherFields,
+                object: {
+                    update: {
+                        title,
+                        description,
+                    },
+                },
+            },
+            include: {
+                object: true,
+            },
         });
+        return annonce;
     }
 
     async removeAnnonce(id: number): Promise<Annonce> {
