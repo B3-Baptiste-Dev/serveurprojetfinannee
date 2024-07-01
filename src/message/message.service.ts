@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateMessageDto } from './dto';
 
@@ -19,6 +19,7 @@ export class MessageService {
             where: { receivedById: userId },
             include: {
                 sentBy: true,
+                receivedBy: true,
                 receivedBy: {
                     include: {
                         reservations: {
@@ -42,6 +43,7 @@ export class MessageService {
             },
             include: {
                 sentBy: true,
+                receivedBy: true,
                 receivedBy: {
                     include: {
                         reservations: {
@@ -57,5 +59,4 @@ export class MessageService {
             },
         });
     }
-
 }
