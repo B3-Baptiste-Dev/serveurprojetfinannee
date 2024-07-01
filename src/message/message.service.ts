@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateMessageDto } from './dto';
 
@@ -19,16 +19,17 @@ export class MessageService {
             where: { receivedById: userId },
             include: {
                 sentBy: true,
-                receivedBy: {
+                receivedBy: true,
+                conversation: {
                     include: {
-                        reservations: {
+                        annonce: {
                             include: {
-                                object: true,
-                            },
-                        },
-                    },
-                },
-            },
+                                object: true
+                            }
+                        }
+                    }
+                }
+            }
         });
     }
 
@@ -42,15 +43,16 @@ export class MessageService {
             },
             include: {
                 sentBy: true,
-                receivedBy: {
+                receivedBy: true,
+                conversation: {
                     include: {
-                        reservations: {
+                        annonce: {
                             include: {
-                                object: true,
-                            },
-                        },
-                    },
-                },
+                                object: true
+                            }
+                        }
+                    }
+                }
             },
             orderBy: {
                 createdAt: 'asc',

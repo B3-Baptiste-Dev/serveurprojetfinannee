@@ -14,6 +14,7 @@ async function main() {
     await prisma.object.deleteMany({});
     await prisma.user.deleteMany({});
     await prisma.category.deleteMany({});
+    await prisma.conversation.deleteMany({});
 
     // Créer des catégories
     await prisma.category.createMany({
@@ -96,19 +97,26 @@ async function main() {
         ]
     });
 
-    // Ajouter des messages entre les utilisateurs
-    await prisma.message.createMany({
-        data: [
-            { content: 'Bonjour, la perceuse électrique est-elle toujours disponible ?', sentById: userIds[1], receivedById: userIds[0] },
-            { content: 'Oui, elle est toujours disponible. Souhaitez-vous la voir ?', sentById: userIds[0], receivedById: userIds[1] },
-            { content: 'Pouvons-nous nous rencontrer ce weekend pour voir la scie circulaire ?', sentById: userIds[2], receivedById: userIds[1] },
-            { content: 'Oui, ce weekend me convient parfaitement.', sentById: userIds[1], receivedById: userIds[2] },
-            { content: 'Est-ce que la débroussailleuse est toujours en bon état ?', sentById: userIds[3], receivedById: userIds[0] },
-            { content: 'Elle est comme neuve. Très peu utilisée.', sentById: userIds[0], receivedById: userIds[3] },
-            { content: 'Je suis intéressé par votre tondeuse. Est-elle encore sous garantie ?', sentById: userIds[0], receivedById: userIds[3] },
-            { content: 'Non, elle n\'est plus sous garantie, mais elle fonctionne parfaitement.', sentById: userIds[3], receivedById: userIds[0] }
-        ]
-    });
+    const createdAnnonces = await prisma.annonce.findMany({});
+    const annonceIds = createdAnnonces.map(annonce => annonce.id);
+
+    // Ajouter des conversations et des messages
+    for (const annonceId of annonceIds) {
+        const conversation = await prisma.conversation.create({
+            data: {
+                annonceId: annonceId,
+                messages: {
+                    createMany: {
+                        data: [
+                            { content: 'Bonjour, cette annonce est-elle toujours disponible ?', sentById: userIds[1], receivedById: userIds[0] },
+                            { content: 'Oui, elle est toujours disponible.', sentById: userIds[0], receivedById: userIds[1] }
+                        ]
+                    }
+                }
+            }
+        });
+        console.log(`Conversation ajoutée pour l'annonce ${annonceId}: ${conversation.id}`);
+    }
 
     console.log('Données de seed supplémentaires ajoutées');
 }

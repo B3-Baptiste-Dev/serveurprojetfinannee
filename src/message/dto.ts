@@ -9,4 +9,7 @@ export class CreateMessageDto {
 
     @IsInt()
     receivedById: number;
+
+    @IsInt()
+    conversationId: number;
 }

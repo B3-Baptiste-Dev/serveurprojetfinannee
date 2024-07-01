@@ -7,7 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Modèle pour les utilisateurs
 model User {
   id               Int           @id @default(autoincrement())
   email            String        @unique
@@ -20,16 +19,19 @@ model User {
   messagesSent     Message[]     @relation("MessagesSent")
   messagesReceived Message[]     @relation("MessagesReceived")
   reviews          Review[]      @relation("UserReviews")
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 }
 
 model Annonce {
-  id        Int      @id @default(autoincrement())
-  objectId  Int
-  object    Object   @relation(fields: [objectId], references: [id])
-  latitude  Float
-  longitude Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            Int            @id @default(autoincrement())
+  objectId      Int
+  object        Object         @relation(fields: [objectId], references: [id])
+  latitude      Float
+  longitude     Float
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  conversations Conversation[]
 }
 
 model Object {
@@ -45,9 +47,10 @@ model Object {
   reviews      Review[]      @relation("ObjectReviews")
   available    Boolean       @default(true)
   reservations Reservation[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
 
-// Modèle pour les réservations
 model Reservation {
   id        Int      @id @default(autoincrement())
   objectId  Int
@@ -57,20 +60,31 @@ model Reservation {
   startDate DateTime
   endDate   DateTime
   status    String   @default("pending") // Exemples de statuts : pending, accepted, declined
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-// Modèle pour les messages
 model Message {
-  id           Int      @id @default(autoincrement())
-  content      String
-  sentById     Int
-  sentBy       User     @relation(name: "MessagesSent", fields: [sentById], references: [id])
-  receivedById Int
-  receivedBy   User     @relation(name: "MessagesReceived", fields: [receivedById], references: [id])
-  createdAt    DateTime @default(now())
+  id             Int          @id @default(autoincrement())
+  content        String
+  sentById       Int
+  sentBy         User         @relation(name: "MessagesSent", fields: [sentById], references: [id])
+  receivedById   Int
+  receivedBy     User         @relation(name: "MessagesReceived", fields: [receivedById], references: [id])
+  conversationId Int
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  createdAt      DateTime     @default(now())
 }
 
-// Modèle pour les évaluations
+model Conversation {
+  id        Int       @id @default(autoincrement())
+  annonceId Int
+  annonce   Annonce   @relation(fields: [annonceId], references: [id])
+  messages  Message[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
 model Review {
   id        Int      @id @default(autoincrement())
   rating    Int // Note sur une échelle, par exemple de 1 à 5
@@ -87,4 +101,6 @@ model Category {
   name        String   @unique
   description String?
   objects     Object[] @relation("ObjectCategories")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
