@@ -114,6 +114,13 @@ export class AnnonceService {
         });
     }
 
+    async updateAnnonce(id: number, updateAnnonceDto: any): Promise<Annonce> {
+        return this.prisma.annonce.update({
+            where: { id },
+            data: updateAnnonceDto,
+        });
+    }
+
     async removeAnnonce(id: number): Promise<Annonce> {
         const annonce = await this.prisma.annonce.findUnique({
             where: { id },

@@ -86,6 +86,12 @@ export class AnnonceController {
         return this.annonceService.findOneAnnonce(id);
     }
 
+    @Put(':id')
+    @UseGuards(AuthGuard('jwt'))
+    async update(@Param('id', ParseIntPipe) id: number, @Body() updateAnnonceDto: Prisma.AnnonceUpdateInput) {
+        return this.annonceService.updateAnnonce(id, updateAnnonceDto);
+    }
+
     @Delete(':id')
     @UseGuards(AuthGuard('jwt'))
     async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
