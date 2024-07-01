@@ -6,15 +6,14 @@ const prisma = new PrismaClient();
 async function main() {
     await prisma.$executeRaw`SELECT 1`;
 
-    // Supprimer les données existantes
     await prisma.review.deleteMany({});
     await prisma.message.deleteMany({});
     await prisma.reservation.deleteMany({});
+    await prisma.conversation.deleteMany({});
     await prisma.annonce.deleteMany({});
     await prisma.object.deleteMany({});
     await prisma.user.deleteMany({});
     await prisma.category.deleteMany({});
-    await prisma.conversation.deleteMany({}); // Assurez-vous que cette ligne est incluse
 
     // Créer des catégories
     await prisma.category.createMany({
@@ -87,13 +86,13 @@ async function main() {
             { objectId: objectIds[4], latitude: 50.627, longitude: 3.059 },
             { objectId: objectIds[5], latitude: 50.631, longitude: 3.055 },
             { objectId: objectIds[6], latitude: 50.632, longitude: 3.058 },
-            { objectId: objectIds[7], latitude: 50.630, longitude: 3.060 },
+            { objectId: objectIds[7], latitude: 50.63, longitude: 3.06 },
             { objectId: objectIds[8], latitude: 50.624, longitude: 3.056 },
             { objectId: objectIds[9], latitude: 50.625, longitude: 3.061 },
             { objectId: objectIds[10], latitude: 50.629, longitude: 3.057 },
             { objectId: objectIds[11], latitude: 50.626, longitude: 3.052 },
             { objectId: objectIds[12], latitude: 50.628, longitude: 3.054 },
-            { objectId: objectIds[13], latitude: 50.630, longitude: 3.053 }
+            { objectId: objectIds[13], latitude: 50.63, longitude: 3.053 }
         ]
     });
 
@@ -101,7 +100,7 @@ async function main() {
     const annonceIds = createdAnnonces.map(annonce => annonce.id);
 
     // Ajouter des conversations et des messages
-    for (const [index, annonceId] of annonceIds.entries()) {
+    for (const annonceId of annonceIds) {
         const conversation = await prisma.conversation.create({
             data: {
                 annonceId: annonceId,
