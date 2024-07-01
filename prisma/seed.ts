@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 async function main() {
     await prisma.$executeRaw`SELECT 1`;
 
+    // Supprimer les données existantes
     await prisma.review.deleteMany({});
     await prisma.message.deleteMany({});
     await prisma.reservation.deleteMany({});
@@ -73,7 +74,7 @@ async function main() {
         ]
     });
 
-    const createdObjects = await prisma.object.findMany({});
+    const createdObjects = await prisma.object.findMany();
     const objectIds = createdObjects.map(object => object.id);
 
     // Ajouter des annonces avec des coordonnées spécifiques pour les nouveaux objets autour de Lille
@@ -99,31 +100,62 @@ async function main() {
     const createdAnnonces = await prisma.annonce.findMany({});
     const annonceIds = createdAnnonces.map(annonce => annonce.id);
 
-    // Ajouter des conversations et des messages pour chaque combinaison unique d'utilisateur et d'annonce
-    for (const annonceId of annonceIds) {
-        for (const userId of userIds) {
-            const owner = await prisma.object.findUnique({
-                where: { id: (await prisma.annonce.findUnique({ where: { id: annonceId } })).objectId }
-            }).owner();
-
-            if (owner.id !== userId) { // L'utilisateur ne peut pas envoyer de message à lui-même
-                const conversation = await prisma.conversation.create({
-                    data: {
-                        annonceId: annonceId,
-                        messages: {
-                            createMany: {
-                                data: [
-                                    { content: 'Bonjour, cette annonce est-elle toujours disponible ?', sentById: userId, receivedById: owner.id },
-                                    { content: 'Oui, elle est toujours disponible.', sentById: owner.id, receivedById: userId }
-                                ]
-                            }
-                        }
-                    }
-                });
-                console.log(`Conversation ajoutée pour l'annonce ${annonceId} et l'utilisateur ${userId}: ${conversation.id}`);
+    // Ajouter des conversations et des messages
+    await prisma.conversation.create({
+        data: {
+            annonceId: annonceIds[0],
+            messages: {
+                createMany: {
+                    data: [
+                        { content: 'Bonjour, cette annonce est-elle toujours disponible ?', sentById: userIds[1], receivedById: userIds[0] },
+                        { content: 'Oui, elle est toujours disponible.', sentById: userIds[0], receivedById: userIds[1] }
+                    ]
+                }
             }
         }
-    }
+    });
+
+    await prisma.conversation.create({
+        data: {
+            annonceId: annonceIds[1],
+            messages: {
+                createMany: {
+                    data: [
+                        { content: 'Pouvons-nous nous rencontrer ce weekend pour voir la scie circulaire ?', sentById: userIds[2], receivedById: userIds[1] },
+                        { content: 'Oui, ce weekend me convient parfaitement.', sentById: userIds[1], receivedById: userIds[2] }
+                    ]
+                }
+            }
+        }
+    });
+
+    await prisma.conversation.create({
+        data: {
+            annonceId: annonceIds[2],
+            messages: {
+                createMany: {
+                    data: [
+                        { content: 'Est-ce que la débroussailleuse est toujours en bon état ?', sentById: userIds[3], receivedById: userIds[0] },
+                        { content: 'Elle est comme neuve. Très peu utilisée.', sentById: userIds[0], receivedById: userIds[3] }
+                    ]
+                }
+            }
+        }
+    });
+
+    await prisma.conversation.create({
+        data: {
+            annonceId: annonceIds[3],
+            messages: {
+                createMany: {
+                    data: [
+                        { content: 'Je suis intéressé par votre tondeuse. Est-elle encore sous garantie ?', sentById: userIds[0], receivedById: userIds[3] },
+                        { content: 'Non, elle n\'est plus sous garantie, mais elle fonctionne parfaitement.', sentById: userIds[3], receivedById: userIds[0] }
+                    ]
+                }
+            }
+        }
+    });
 
     console.log('Données de seed supplémentaires ajoutées');
 }
