@@ -151,12 +151,18 @@ export class AnnonceService {
     }
 
     async removeAnnonce(id: number): Promise<Annonce> {
+        // Ajoutez un log pour vérifier l'ID de l'annonce
+        console.log(`Tentative de suppression de l'annonce avec l'ID: ${id}`);
+
         const annonce = await this.prisma.annonce.findUnique({
             where: { id },
         });
+
         if (!annonce) {
+            console.error(`Annonce avec l'ID ${id} introuvable`);
             throw new Error('Annonce introuvable');
         }
+
         await this.prisma.reservation.deleteMany({
             where: { objectId: annonce.objectId },
         });
@@ -166,6 +172,8 @@ export class AnnonceService {
         await this.prisma.object.delete({
             where: { id: annonce.objectId },
         });
+
+        console.log(`Annonce avec l'ID ${id} supprimée avec succès`);
         return annonce;
     }
 

@@ -14,7 +14,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AnnonceService } from './annonce.service';
 import { CreateAnnonceWithObjectDto } from './createAnnonceWithObjectDTO';
-import { Prisma } from '@prisma/client';
+import { Annonce, Prisma } from '@prisma/client';
 import { CreateObjectDto } from '../object/dto';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -94,8 +94,8 @@ export class AnnonceController {
 
     @Delete(':id')
     @UseGuards(AuthGuard('jwt'))
-    async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
-        await this.annonceService.removeAnnonce(id);
-        return;
+    async remove(@Param('id', ParseIntPipe) id: number): Promise<Annonce> {
+        return this.annonceService.removeAnnonce(id);
     }
+
 }
