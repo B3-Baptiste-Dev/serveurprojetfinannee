@@ -14,7 +14,7 @@ async function main() {
     await prisma.object.deleteMany({});
     await prisma.user.deleteMany({});
     await prisma.category.deleteMany({});
-    await prisma.conversation.deleteMany({});
+    await prisma.conversation.deleteMany({}); // Assurez-vous que cette ligne est incluse
 
     // Créer des catégories
     await prisma.category.createMany({
@@ -101,20 +101,20 @@ async function main() {
     const annonceIds = createdAnnonces.map(annonce => annonce.id);
 
     // Ajouter des conversations et des messages
-    for (const annonceId of annonceIds) {
+    for (const [index, annonceId] of annonceIds.entries()) {
         const conversation = await prisma.conversation.create({
             data: {
-                annonceId: annonceId
+                annonceId: annonceId,
+                messages: {
+                    createMany: {
+                        data: [
+                            { content: 'Bonjour, cette annonce est-elle toujours disponible ?', sentById: userIds[1], receivedById: userIds[0] },
+                            { content: 'Oui, elle est toujours disponible.', sentById: userIds[0], receivedById: userIds[1] }
+                        ]
+                    }
+                }
             }
         });
-
-        await prisma.message.createMany({
-            data: [
-                { content: 'Bonjour, cette annonce est-elle toujours disponible ?', sentById: userIds[1], receivedById: userIds[0], conversationId: conversation.id },
-                { content: 'Oui, elle est toujours disponible.', sentById: userIds[0], receivedById: userIds[1], conversationId: conversation.id }
-            ]
-        });
-
         console.log(`Conversation ajoutée pour l'annonce ${annonceId}: ${conversation.id}`);
     }
 
@@ -129,4 +129,3 @@ main()
   .finally(async () => {
       await prisma.$disconnect();
   });
-

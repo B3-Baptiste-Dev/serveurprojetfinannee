@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateMessageDto } from './dto';
 
@@ -7,13 +7,25 @@ export class MessageService {
     constructor(private prisma: PrismaService) {}
 
     async create(createMessageDto: CreateMessageDto) {
+        const { sentById, receivedById, content, conversationId } = createMessageDto;
+
+        // Vérifier si la conversation existe
+        const conversation = await this.prisma.conversation.findUnique({
+            where: { id: conversationId }
+        });
+
+        if (!conversation) {
+            throw new NotFoundException('Conversation not found');
+        }
+
+        // Créer le message dans la conversation existante
         return this.prisma.message.create({
             data: {
-                content: createMessageDto.content,
-                sentById: createMessageDto.sentById,
-                receivedById: createMessageDto.receivedById,
-                conversationId: createMessageDto.conversationId,  // Ajouter cette ligne
-            },
+                content,
+                sentById,
+                receivedById,
+                conversationId
+            }
         });
     }
 
