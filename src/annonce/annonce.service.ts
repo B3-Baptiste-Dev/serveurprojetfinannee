@@ -116,22 +116,37 @@ export class AnnonceService {
 
     async updateAnnonce(id: number, updateAnnonceDto: any): Promise<Annonce> {
         const { title, description, ...otherFields } = updateAnnonceDto;
-        const annonce = await this.prisma.annonce.update({
+
+        // Récupérer l'annonce pour obtenir l'objectId
+        const annonce = await this.prisma.annonce.findUnique({
+            where: { id },
+            include: { object: true },
+        });
+
+        if (!annonce) {
+            throw new Error('Annonce introuvable');
+        }
+
+        // Mise à jour de l'objet lié
+        await this.prisma.object.update({
+            where: { id: annonce.objectId },
+            data: {
+                title,
+                description,
+            },
+        });
+
+        // Mise à jour de l'annonce elle-même
+        const updatedAnnonce = await this.prisma.annonce.update({
             where: { id },
             data: {
                 ...otherFields,
-                object: {
-                    update: {
-                        title,
-                        description,
-                    },
-                },
+                updatedAt: new Date(),
             },
-            include: {
-                object: true,
-            },
+            include: { object: true },
         });
-        return annonce;
+
+        return updatedAnnonce;
     }
 
     async removeAnnonce(id: number): Promise<Annonce> {
