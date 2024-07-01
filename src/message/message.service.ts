@@ -7,7 +7,14 @@ export class MessageService {
     constructor(private prisma: PrismaService) {}
 
     async create(createMessageDto: CreateMessageDto) {
-        return this.prisma.message.create({ data: createMessageDto });
+        return this.prisma.message.create({
+            data: {
+                content: createMessageDto.content,
+                sentById: createMessageDto.sentById,
+                receivedById: createMessageDto.receivedById,
+                conversationId: createMessageDto.conversationId,  // Ajouter cette ligne
+            },
+        });
     }
 
     async findAll() {
