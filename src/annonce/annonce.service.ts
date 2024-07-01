@@ -22,9 +22,7 @@ export class AnnonceService {
         const annonces = await this.prisma.annonce.findMany({
             where: {
                 object: {
-                    ownerId: {
-                        not: userId,
-                    },
+                    ownerId: userId,
                 },
             },
             include: {
@@ -35,8 +33,6 @@ export class AnnonceService {
         console.log(`Fetched annonces: ${JSON.stringify(annonces, null, 2)}`); // Log the fetched annonces
         return annonces;
     }
-
-
 
     async createAnnonce(createAnnonceDto: CreateAnnonceDto): Promise<Annonce> {
         return this.prisma.annonce.create({

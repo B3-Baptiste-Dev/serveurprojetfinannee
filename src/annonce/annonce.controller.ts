@@ -32,6 +32,7 @@ export class AnnonceController {
     findAllWithObjects(@Query('userId') userId?: string) {
         return this.annonceService.findAllAnnoncesWithObjects(Number(userId));
     }
+
     @UseGuards(AuthGuard('jwt'))
     @Post()
     @UseInterceptors(FileInterceptor('image'))
