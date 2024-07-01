@@ -30,6 +30,21 @@ export class AnnonceService {
         return annonces;
     }
 
+    async findAllAnnoncesWithObjectsExcludingUser(excludeUserId: number): Promise<any[]> {
+        return this.prisma.annonce.findMany({
+            where: {
+                object: {
+                    ownerId: {
+                        not: excludeUserId,
+                    },
+                },
+            },
+            include: {
+                object: true,
+            },
+        });
+    }
+
     async createAnnonce(createAnnonceDto: CreateAnnonceDto): Promise<Annonce> {
         return this.prisma.annonce.create({
             data: createAnnonceDto,

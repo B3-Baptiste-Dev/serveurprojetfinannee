@@ -33,6 +33,11 @@ export class AnnonceController {
         return this.annonceService.findAllAnnoncesWithObjects(Number(userId));
     }
 
+    @Get('excludeUserId')
+    findAllWithObjectsexcludeUserId(@Query('excludeUserId') excludeUserId?: string) {
+        return this.annonceService.findAllAnnoncesWithObjectsExcludingUser(Number(excludeUserId));
+    }
+
     @UseGuards(AuthGuard('jwt'))
     @Post()
     @UseInterceptors(FileInterceptor('image'))
