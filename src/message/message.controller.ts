@@ -24,7 +24,7 @@ export class MessageController {
     @Get('received')
     findAllReceived(@Req() req) {
         const userId = req.user.userId;
-        return this.messageService.findAllMessagesReceivedByUserId(userId);
+        return this.messageService.findAllConversationsByUserId(userId);
     }
 
     @UseGuards(AuthGuard('jwt'))

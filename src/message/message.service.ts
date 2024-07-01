@@ -53,51 +53,42 @@ export class MessageService {
         return this.prisma.message.findMany();
     }
 
-    async findAllMessagesReceivedByUserId(userId: number) {
-        const messages = await this.prisma.message.findMany({
-            where: { receivedById: userId },
-            include: {
-                sentBy: true,
-                receivedBy: true,
-                conversation: {
-                    include: {
-                        annonce: {
-                            include: {
-                                object: true
-                            }
-                        }
-                    }
-                }
+    async findAllConversationsByUserId(userId: number) {
+        const conversations = await this.prisma.conversation.findMany({
+            where: {
+                OR: [
+                    { messages: { some: { sentById: userId } } },
+                    { messages: { some: { receivedById: userId } } },
+                ],
             },
-            orderBy: { createdAt: 'desc' }
+            include: {
+                messages: {
+                    orderBy: { createdAt: 'desc' },
+                    take: 1,
+                    include: {
+                        sentBy: true,
+                        receivedBy: true
+                    },
+                },
+                annonce: {
+                    include: {
+                        object: true,
+                    },
+                },
+            },
         });
 
-        const conversationsMap = new Map<number, any>();
-
-        for (const message of messages) {
-            const conversationId = message.conversationId;
-            const conversation = conversationsMap.get(conversationId) || {
-                conversationId: conversationId,
-                lastMessage: '',
-                userName: '',
-                objectTitle: ''
+        return conversations.map(conversation => {
+            const lastMessage = conversation.messages[0];
+            return {
+                conversationId: conversation.id,
+                lastMessage: lastMessage ? lastMessage.content : '',
+                userName: lastMessage ? `${lastMessage.sentBy.first_name} ${lastMessage.sentBy.last_name}` : '',
+                objectTitle: conversation.annonce.object.title,
             };
-
-            if (message.createdAt > conversation.lastMessageCreatedAt) {
-                conversation.lastMessage = message.content;
-                conversation.userName = `${message.sentBy.first_name} ${message.sentBy.last_name}`;
-                conversation.objectTitle = message.conversation.annonce.object.title;
-                conversation.lastMessageCreatedAt = message.createdAt;
-            }
-
-            conversationsMap.set(conversationId, conversation);
-        }
-
-        return Array.from(conversationsMap.values()).map(conversation => {
-            delete conversation.lastMessageCreatedAt;
-            return conversation;
         });
     }
+
 
 
 
