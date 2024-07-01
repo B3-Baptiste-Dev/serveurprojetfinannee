@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 async function main() {
     await prisma.$executeRaw`SELECT 1`;
 
+    // Suppression des données existantes
     await prisma.review.deleteMany({});
     await prisma.message.deleteMany({});
     await prisma.reservation.deleteMany({});
@@ -15,8 +16,8 @@ async function main() {
     await prisma.user.deleteMany({});
     await prisma.category.deleteMany({});
 
-    // Créer des catégories
-    await prisma.category.createMany({
+    // Création des catégories
+    const categories = await prisma.category.createMany({
         data: [
             { name: 'Outils électriques', description: 'Outils électriques pour divers travaux' },
             { name: 'Jardinage', description: 'Outils pour entretenir le jardin' },
@@ -25,9 +26,8 @@ async function main() {
         ]
     });
 
-    // Récupérer les IDs des catégories
-    const categories = await prisma.category.findMany();
-    const categoriesMap = categories.reduce((acc, category) => {
+    const createdCategories = await prisma.category.findMany();
+    const categoriesMap = createdCategories.reduce((acc, category) => {
         acc[category.name] = category.id;
         return acc;
     }, {} as { [key: string]: number });
