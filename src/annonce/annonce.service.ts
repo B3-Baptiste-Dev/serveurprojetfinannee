@@ -124,6 +124,7 @@ export class AnnonceService {
         });
 
         if (!annonce) {
+            console.error(`Annonce avec l'ID ${id} introuvable`);
             throw new Error('Annonce introuvable');
         }
 
