@@ -28,10 +28,8 @@ export class MessageController {
     }
 
     @UseGuards(AuthGuard('jwt'))
-    @Get('conversation/:otherUserId')
-    findAllConversation(@Req() req, @Param('otherUserId', ParseIntPipe) otherUserId: number) {
-        const userId = req.user.userId;
-        return this.messageService.findConversation(userId, otherUserId);
+    @Get('conversation/:conversationId')
+    findAllMessagesInConversation(@Param('conversationId', ParseIntPipe) conversationId: number) {
+        return this.messageService.findMessagesInConversation(conversationId);
     }
-
 }

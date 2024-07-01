@@ -12,7 +12,6 @@ export class MessageService {
         let conversation;
 
         if (conversationId) {
-            // Vérifier si la conversation existe
             conversation = await this.prisma.conversation.findUnique({
                 where: { id: conversationId }
             });
@@ -21,7 +20,6 @@ export class MessageService {
                 throw new NotFoundException('Conversation not found');
             }
         } else {
-            // Vérifier s'il existe déjà une conversation pour cette annonce et ces utilisateurs
             conversation = await this.prisma.conversation.findFirst({
                 where: {
                     annonceId: annonceId,
@@ -35,16 +33,12 @@ export class MessageService {
             });
 
             if (!conversation) {
-                // Créer une nouvelle conversation si elle n'existe pas
                 conversation = await this.prisma.conversation.create({
-                    data: {
-                        annonceId
-                    }
+                    data: { annonceId }
                 });
             }
         }
 
-        // Créer le message dans la conversation existante ou nouvellement créée
         return this.prisma.message.create({
             data: {
                 content,
@@ -78,14 +72,9 @@ export class MessageService {
         });
     }
 
-    async findConversation(userId: number, otherUserId: number) {
+    async findMessagesInConversation(conversationId: number) {
         return this.prisma.message.findMany({
-            where: {
-                OR: [
-                    { sentById: userId, receivedById: otherUserId },
-                    { sentById: otherUserId, receivedById: userId },
-                ],
-            },
+            where: { conversationId },
             include: {
                 sentBy: true,
                 receivedBy: true,
@@ -99,9 +88,7 @@ export class MessageService {
                     }
                 }
             },
-            orderBy: {
-                createdAt: 'asc',
-            },
+            orderBy: { createdAt: 'asc' }
         });
     }
 }
