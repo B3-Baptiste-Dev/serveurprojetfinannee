@@ -1,4 +1,4 @@
-import { IsInt, IsString } from 'class-validator';
+import { IsInt, IsString, IsOptional } from 'class-validator';
 
 export class CreateMessageDto {
     @IsString()
@@ -11,5 +11,9 @@ export class CreateMessageDto {
     receivedById: number;
 
     @IsInt()
-    conversationId: number;
+    @IsOptional()
+    conversationId?: number;
+
+    @IsInt()
+    annonceId: number;
 }

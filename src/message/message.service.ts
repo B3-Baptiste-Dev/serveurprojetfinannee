@@ -7,24 +7,50 @@ export class MessageService {
     constructor(private prisma: PrismaService) {}
 
     async create(createMessageDto: CreateMessageDto) {
-        const { sentById, receivedById, content, conversationId } = createMessageDto;
+        const { sentById, receivedById, content, conversationId, annonceId } = createMessageDto;
 
-        // Vérifier si la conversation existe
-        const conversation = await this.prisma.conversation.findUnique({
-            where: { id: conversationId }
-        });
+        let conversation;
 
-        if (!conversation) {
-            throw new NotFoundException('Conversation not found');
+        if (conversationId) {
+            // Vérifier si la conversation existe
+            conversation = await this.prisma.conversation.findUnique({
+                where: { id: conversationId }
+            });
+
+            if (!conversation) {
+                throw new NotFoundException('Conversation not found');
+            }
+        } else {
+            // Vérifier s'il existe déjà une conversation pour cette annonce et ces utilisateurs
+            conversation = await this.prisma.conversation.findFirst({
+                where: {
+                    annonceId: annonceId,
+                    messages: {
+                        some: {
+                            sentById: sentById,
+                            receivedById: receivedById
+                        }
+                    }
+                }
+            });
+
+            if (!conversation) {
+                // Créer une nouvelle conversation si elle n'existe pas
+                conversation = await this.prisma.conversation.create({
+                    data: {
+                        annonceId
+                    }
+                });
+            }
         }
 
-        // Créer le message dans la conversation existante
+        // Créer le message dans la conversation existante ou nouvellement créée
         return this.prisma.message.create({
             data: {
                 content,
                 sentById,
                 receivedById,
-                conversationId
+                conversationId: conversation.id
             }
         });
     }
