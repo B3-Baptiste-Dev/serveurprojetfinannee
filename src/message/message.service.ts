@@ -17,7 +17,18 @@ export class MessageService {
     async findAllMessagesReceivedByUserId(userId: number) {
         return this.prisma.message.findMany({
             where: { receivedById: userId },
-            include: { sentBy: true, receivedBy: true },
+            include: {
+                sentBy: true,
+                receivedBy: {
+                    include: {
+                        reservations: {
+                            include: {
+                                object: true,
+                            },
+                        },
+                    },
+                },
+            },
         });
     }
 
@@ -31,7 +42,15 @@ export class MessageService {
             },
             include: {
                 sentBy: true,
-                receivedBy: true,
+                receivedBy: {
+                    include: {
+                        reservations: {
+                            include: {
+                                object: true,
+                            },
+                        },
+                    },
+                },
             },
             orderBy: {
                 createdAt: 'asc',
