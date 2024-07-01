@@ -54,7 +54,7 @@ export class MessageService {
     }
 
     async findAllMessagesReceivedByUserId(userId: number) {
-        return this.prisma.message.findMany({
+        const messages = await this.prisma.message.findMany({
             where: { receivedById: userId },
             include: {
                 sentBy: true,
@@ -68,9 +68,27 @@ export class MessageService {
                         }
                     }
                 }
-            }
+            },
+            orderBy: { createdAt: 'desc' }
         });
+
+        const conversationsMap = new Map<number, any>();
+
+        for (const message of messages) {
+            const conversationId = message.conversationId;
+            if (!conversationsMap.has(conversationId)) {
+                conversationsMap.set(conversationId, {
+                    conversationId: conversationId,
+                    lastMessage: message.content,
+                    userName: `${message.sentBy.first_name} ${message.sentBy.last_name}`,
+                    objectTitle: message.conversation.annonce.object.title
+                });
+            }
+        }
+
+        return Array.from(conversationsMap.values());
     }
+
 
     async findMessagesInConversation(conversationId: number) {
         return this.prisma.message.findMany({
