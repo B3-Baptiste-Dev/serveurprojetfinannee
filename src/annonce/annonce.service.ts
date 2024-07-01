@@ -17,7 +17,9 @@ export class AnnonceService {
     }
 
     async findAllAnnoncesWithObjects(userId: number): Promise<any[]> {
-        return this.prisma.annonce.findMany({
+        console.log(`Received userId: ${userId}`); // Log the received userId
+
+        const annonces = await this.prisma.annonce.findMany({
             where: {
                 object: {
                     ownerId: {
@@ -29,7 +31,11 @@ export class AnnonceService {
                 object: true,
             },
         });
+
+        console.log(`Fetched annonces: ${JSON.stringify(annonces, null, 2)}`); // Log the fetched annonces
+        return annonces;
     }
+
 
 
     async createAnnonce(createAnnonceDto: CreateAnnonceDto): Promise<Annonce> {
