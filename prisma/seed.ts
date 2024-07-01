@@ -104,17 +104,17 @@ async function main() {
     for (const annonceId of annonceIds) {
         const conversation = await prisma.conversation.create({
             data: {
-                annonceId: annonceId,
-                messages: {
-                    createMany: {
-                        data: [
-                            { content: 'Bonjour, cette annonce est-elle toujours disponible ?', sentById: userIds[1], receivedById: userIds[0] },
-                            { content: 'Oui, elle est toujours disponible.', sentById: userIds[0], receivedById: userIds[1] }
-                        ]
-                    }
-                }
+                annonceId: annonceId
             }
         });
+
+        await prisma.message.createMany({
+            data: [
+                { content: 'Bonjour, cette annonce est-elle toujours disponible ?', sentById: userIds[1], receivedById: userIds[0], conversationId: conversation.id },
+                { content: 'Oui, elle est toujours disponible.', sentById: userIds[0], receivedById: userIds[1], conversationId: conversation.id }
+            ]
+        });
+
         console.log(`Conversation ajoutée pour l'annonce ${annonceId}: ${conversation.id}`);
     }
 
@@ -129,3 +129,4 @@ main()
   .finally(async () => {
       await prisma.$disconnect();
   });
+
