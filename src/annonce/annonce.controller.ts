@@ -88,14 +88,14 @@ export class AnnonceController {
 
     @Put(':id')
     @UseGuards(AuthGuard('jwt'))
-    async update(@Param('id', ParseIntPipe) id: number, @Body() updateAnnonceDto: any) {
+    async update(@Param('id', ParseIntPipe) id: number, @Body() updateAnnonceDto: { title: string, description: string }): Promise<Annonce> {
         return this.annonceService.updateAnnonce(id, updateAnnonceDto);
     }
 
     @Delete(':id')
     @UseGuards(AuthGuard('jwt'))
-    async remove(@Param('id', ParseIntPipe) id: number): Promise<Annonce> {
-        return this.annonceService.removeAnnonce(id);
+    async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+        await this.annonceService.removeAnnonce(id);
     }
 
 }

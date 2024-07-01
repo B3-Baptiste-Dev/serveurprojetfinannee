@@ -114,55 +114,36 @@ export class AnnonceService {
         });
     }
 
-    async updateAnnonce(id: number, updateAnnonceDto: any): Promise<Annonce> {
-        const { title, description, ...otherFields } = updateAnnonceDto;
-
-        // Récupérer l'annonce pour obtenir l'objectId
+    async updateAnnonce(id: number, updateAnnonceDto: { title: string, description: string }): Promise<Annonce> {
         const annonce = await this.prisma.annonce.findUnique({
             where: { id },
-            include: { object: true },
+            include: { object: true }
         });
-
         if (!annonce) {
-            console.error(`Annonce avec l'ID ${id} introuvable`);
             throw new Error('Annonce introuvable');
         }
 
-        // Mise à jour de l'objet lié
         await this.prisma.object.update({
             where: { id: annonce.objectId },
             data: {
-                title,
-                description,
+                title: updateAnnonceDto.title,
+                description: updateAnnonceDto.description,
             },
         });
 
-        // Mise à jour de l'annonce elle-même
-        const updatedAnnonce = await this.prisma.annonce.update({
+        return this.prisma.annonce.update({
             where: { id },
-            data: {
-                ...otherFields,
-                updatedAt: new Date(),
-            },
-            include: { object: true },
+            data: { updatedAt: new Date() }
         });
-
-        return updatedAnnonce;
     }
 
-    async removeAnnonce(id: number): Promise<Annonce> {
-        // Ajoutez un log pour vérifier l'ID de l'annonce
-        console.log(`Tentative de suppression de l'annonce avec l'ID: ${id}`);
-
+    async removeAnnonce(id: number): Promise<void> {
         const annonce = await this.prisma.annonce.findUnique({
             where: { id },
         });
-
         if (!annonce) {
-            console.error(`Annonce avec l'ID ${id} introuvable`);
             throw new Error('Annonce introuvable');
         }
-
         await this.prisma.reservation.deleteMany({
             where: { objectId: annonce.objectId },
         });
@@ -172,9 +153,6 @@ export class AnnonceService {
         await this.prisma.object.delete({
             where: { id: annonce.objectId },
         });
-
-        console.log(`Annonce avec l'ID ${id} supprimée avec succès`);
-        return annonce;
     }
 
 }
