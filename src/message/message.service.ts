@@ -76,18 +76,29 @@ export class MessageService {
 
         for (const message of messages) {
             const conversationId = message.conversationId;
-            if (!conversationsMap.has(conversationId)) {
-                conversationsMap.set(conversationId, {
-                    conversationId: conversationId,
-                    lastMessage: message.content,
-                    userName: `${message.sentBy.first_name} ${message.sentBy.last_name}`,
-                    objectTitle: message.conversation.annonce.object.title
-                });
+            const conversation = conversationsMap.get(conversationId) || {
+                conversationId: conversationId,
+                lastMessage: '',
+                userName: '',
+                objectTitle: ''
+            };
+
+            if (message.createdAt > conversation.lastMessageCreatedAt) {
+                conversation.lastMessage = message.content;
+                conversation.userName = `${message.sentBy.first_name} ${message.sentBy.last_name}`;
+                conversation.objectTitle = message.conversation.annonce.object.title;
+                conversation.lastMessageCreatedAt = message.createdAt;
             }
+
+            conversationsMap.set(conversationId, conversation);
         }
 
-        return Array.from(conversationsMap.values());
+        return Array.from(conversationsMap.values()).map(conversation => {
+            delete conversation.lastMessageCreatedAt;
+            return conversation;
+        });
     }
+
 
 
     async findMessagesInConversation(conversationId: number) {
