@@ -15,6 +15,14 @@ export class MessageController {
         return this.messageService.create(createMessageDto);
     }
 
+    @UseGuards(AuthGuard('jwt'))
+    @Post('send')
+    async sendMessage(@Body() createMessageDto: CreateMessageDto, @Req() req) {
+        const userId = req.user.userId;
+        createMessageDto.sentById = userId;
+        return await this.messageService.create(createMessageDto);
+    }
+
     @Get()
     findAll() {
         return this.messageService.findAll();
@@ -32,4 +40,6 @@ export class MessageController {
     findAllMessagesInConversation(@Param('conversationId', ParseIntPipe) conversationId: number) {
         return this.messageService.findMessagesInConversation(conversationId);
     }
+
+
 }
