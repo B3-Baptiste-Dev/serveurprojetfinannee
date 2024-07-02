@@ -144,6 +144,9 @@ export class AnnonceService {
         if (!annonce) {
             throw new Error('Annonce introuvable');
         }
+        await this.prisma.conversation.deleteMany({
+            where: { annonceId: annonce.id },
+        });
         await this.prisma.reservation.deleteMany({
             where: { objectId: annonce.objectId },
         });
