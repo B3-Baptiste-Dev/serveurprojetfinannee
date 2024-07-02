@@ -85,7 +85,7 @@ export class MessageService {
                 lastMessage: lastMessage ? lastMessage.content : '',
                 userName: lastMessage ? `${lastMessage.sentBy.first_name} ${lastMessage.sentBy.last_name}` : '',
                 objectTitle: conversation.annonce.object.title,
-                receiverId: lastMessage.sentBy.id === userId,
+                receiverId: lastMessage.receivedBy.id,
                 annonceId: conversation.annonceId,
             };
         });
