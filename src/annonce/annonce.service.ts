@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateAnnonceDto } from './dto';
 import { CreateAnnonceWithObjectDto } from './createAnnonceWithObjectDTO';
@@ -141,18 +141,38 @@ export class AnnonceService {
         const annonce = await this.prisma.annonce.findUnique({
             where: { id },
         });
+
         if (!annonce) {
-            throw new Error('Annonce introuvable');
+            throw new NotFoundException('Annonce introuvable');
         }
+
+        // Supprimer les messages associés aux conversations de cette annonce
+        const conversations = await this.prisma.conversation.findMany({
+            where: { annonceId: annonce.id },
+        });
+
+        for (const conversation of conversations) {
+            await this.prisma.message.deleteMany({
+                where: { conversationId: conversation.id },
+            });
+        }
+
+        // Supprimer les conversations associées à cette annonce
         await this.prisma.conversation.deleteMany({
             where: { annonceId: annonce.id },
         });
+
+        // Supprimer les réservations associées à l'objet de l'annonce
         await this.prisma.reservation.deleteMany({
             where: { objectId: annonce.objectId },
         });
+
+        // Supprimer l'annonce
         await this.prisma.annonce.delete({
             where: { id },
         });
+
+        // Supprimer l'objet associé
         await this.prisma.object.delete({
             where: { id: annonce.objectId },
         });
